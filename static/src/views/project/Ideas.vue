@@ -245,9 +245,20 @@ export default defineComponent({
   computed: {
     ideasView(): ideaView[] {
       return this.ideas.map(idea => {
-        const impact = idea.goals ? this.options.goals.reduce((sum, goal) => {
-              return idea.goals[goal.id] ? sum + idea.goals[goal.id].value * 10 / goal.divider : sum
+        const goals = idea.goals ? idea.goals.reduce((res, goal) => {
+              res[goal.id] = goal
+              return res
+            }, {} as { [key: number]: IdeasListIdeaGoalV1 }) : {},
+
+            teams = idea.teams ? idea.teams.reduce((res, team) => {
+              res[team.id] = team
+              return res
+            }, {} as { [key: number]: IdeasListIdeaTeamV1 }) : {},
+
+            impact = idea.goals ? this.options.goals.reduce((sum, goal) => {
+              return idea.goals[goal.id] ? sum + goals[goal.id].value * 10 / goal.divider : sum
             }, 0) : undefined,
+
             effort = idea.teams ? idea.teams.reduce((sum, team) => {
               return sum + team.capacity
             }, 0) : undefined
@@ -264,14 +275,8 @@ export default defineComponent({
           reach_comment: idea.reach_comment,
           confident: idea.confident,
           confident_comment: idea.confident_comment,
-          goals: idea.goals ? idea.goals.reduce((res, goal) => {
-            res[goal.id] = goal
-            return res
-          }, {} as { [key: number]: IdeasListIdeaGoalV1 }) : {},
-          teams: idea.teams ? idea.teams.reduce((res, team) => {
-            res[team.id] = team
-            return res
-          }, {} as { [key: number]: IdeasListIdeaTeamV1 }) : {},
+          goals: goals,
+          teams: teams,
           score: score
         }
       }).sort((a, b) => {
