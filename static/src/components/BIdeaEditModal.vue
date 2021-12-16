@@ -1,6 +1,6 @@
 <template>
   <MDBModal :id="id" tabindex="-1" :labelledby="`${id}Label`" v-model="show">
-    <form @submit.prevent="save">
+    <form @submit.prevent="save" @keypress="formKeyPress">
       <MDBModalHeader>
         <MDBModalTitle :id="`${id}Label`">{{ caption }}</MDBModalTitle>
       </MDBModalHeader>
@@ -8,6 +8,11 @@
       <MDBModalBody>
         <slot/>
         <div class="alert alert-danger mt-3" v-if="error">{{ error }}</div>
+        <div class="mask text-center" style="background-color: rgba(0, 0, 0, 0.6)" v-if="saving">
+          <div class="d-flex justify-content-center align-items-center h-100">
+            <MDBSpinner color="light" style="width: 3rem; height: 3rem"/>
+          </div>
+        </div>
       </MDBModalBody>
 
       <MDBModalFooter>
@@ -19,13 +24,21 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue';
-import {MDBBtn, MDBModal, MDBModalBody, MDBModalFooter, MDBModalHeader, MDBModalTitle} from "mdb-vue-ui-kit";
+import {
+  MDBBtn,
+  MDBModal,
+  MDBModalBody,
+  MDBModalFooter,
+  MDBModalHeader,
+  MDBModalTitle,
+  MDBSpinner
+} from "mdb-vue-ui-kit";
 import api, {IdeasEditReqV1} from "@/api";
 
 export default defineComponent({
   name: 'BIdeaEditModal',
   components: {
-    MDBBtn, MDBModal, MDBModalBody, MDBModalFooter, MDBModalHeader, MDBModalTitle
+    MDBBtn, MDBModal, MDBModalBody, MDBModalFooter, MDBModalHeader, MDBModalTitle, MDBSpinner
   },
   props: {
     id: String,
@@ -68,6 +81,13 @@ export default defineComponent({
       }).finally(() => {
         this.saving = false
       })
+    },
+
+    formKeyPress(e: KeyboardEvent) {
+      if (e.keyCode === 13 && (e.target as HTMLElement).nodeName != "TEXTAREA") {
+        e.preventDefault();
+        this.save()
+      }
     }
   }
 });
