@@ -2,9 +2,12 @@ package list
 
 import (
 	"context"
+	"errors"
 
 	"github.com/go-qbit/model"
 	"github.com/go-qbit/model/expr"
+
+	"riceboards/authctx"
 )
 
 type reqV1 struct {
@@ -36,6 +39,13 @@ type IdeaTeamV1 struct {
 }
 
 func (m *Method) V1(ctx context.Context, r *reqV1) ([]ideaV1, error) {
+	if _, err := authctx.GetCurUserId(ctx); err != nil {
+		if errors.Is(err, authctx.ErrUnauthorized) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
 	var ideas []ideaV1
 	if err := m.db.Ideas.GetAllToStruct(ctx, &ideas, model.GetAllOptions{
 		Filter: expr.Eq(m.db.Ideas.FieldExpr("fk_project_id"), expr.Value(r.ProjectId)),
