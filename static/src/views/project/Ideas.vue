@@ -68,7 +68,7 @@
             </a>
           </td>
 
-          <td class="position-relative">
+          <td class="position-relative text-nowrap">
             <ul class="list-unstyled mb-0" v-if="filteredGoals(idea).length">
               <li v-for="goal in filteredGoals(idea)" :key="goal.id">
                 <MDBBadge color="success" class="ms-1" style="width: 3em">
@@ -115,7 +115,7 @@
             </a>
           </td>
 
-          <td class="position-relative">
+          <td class="position-relative text-nowrap">
             <ul class="list-unstyled mb-0" v-if="filteredTeams(idea).length">
               <li v-for="team in filteredTeams(idea)" :key="team.id">{{ team.caption }}:&nbsp;
                 {{ idea.teams[team.id].capacity }}
@@ -256,7 +256,7 @@ export default defineComponent({
             }, {} as { [key: number]: IdeasListIdeaTeamV1 }) : {},
 
             impact = idea.goals ? this.options.goals.reduce((sum, goal) => {
-              return idea.goals[goal.id] ? sum + goals[goal.id].value * 10 / goal.divider : sum
+              return goals[goal.id] ? sum + goals[goal.id].value * 10 / goal.divider : sum
             }, 0) : undefined,
 
             effort = idea.teams ? idea.teams.reduce((sum, team) => {
