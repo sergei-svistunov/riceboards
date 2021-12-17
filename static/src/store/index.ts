@@ -38,7 +38,7 @@ export default createStore({
                 avatarUrl: ""
             }
             localStorage.removeItem("token")
-        }
+        },
     },
     actions: {},
     modules: {}

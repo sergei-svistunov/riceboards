@@ -1,6 +1,6 @@
 <template>
   <MDBNavbar expand="lg" light bg="light" container>
-    <MDBNavbarBrand href="#">RICE boards</MDBNavbarBrand>
+    <MDBNavbarBrand href="/">RICE boards</MDBNavbarBrand>
 
     <MDBNavbarToggler
         @click="collapse = !collapse"
@@ -9,7 +9,7 @@
 
     <MDBCollapse v-model="collapse" id="navbarSupportedContent">
       <MDBNavbarNav class="mb-2 mb-lg-0">
-        <MDBNavbarItem to="/projects" :active="$route.name==='Projects'">Projects</MDBNavbarItem>
+        <MDBNavbarItem to="/projects" :active="$route.path.startsWith('/projects')">Projects</MDBNavbarItem>
       </MDBNavbarNav>
     </MDBCollapse>
 
@@ -25,7 +25,8 @@
         />
         </MDBDropdownToggle>
         <MDBDropdownMenu animation>
-          <MDBDropdownItem href="#logout" @click.prevent="$store.commit('removeUser');showLogin()">Logout</MDBDropdownItem>
+          <MDBDropdownItem href="#logout" @click.prevent="$store.commit('removeUser');showLogin()">Logout
+          </MDBDropdownItem>
         </MDBDropdownMenu>
       </MDBDropdown>
 

@@ -1,14 +1,10 @@
 <template>
   <BContent :loading="loading || optionsLoading" :error="error || optionsError">
     <MDBCol md="12">
-      <h1>
-        Ideas
-        <MDBBtn color="primary" floating size="md" style="margin-bottom: 0.5em;" title="Add a new idea"
-                aria-controls="addModal"
-                @click="addForm">
-          <MDBIcon icon="plus" iconStyle="fas"/>
-        </MDBBtn>
-      </h1>
+      <MDBBtn outline="primary" rounded size="md" style="margin-bottom: 0.5em;" title="Add a new idea"
+              aria-controls="addModal" @click="addForm">
+        <MDBIcon icon="plus" iconStyle="fas" class="me-1"/>Add a new idea
+      </MDBBtn>
 
       <MDBModal size="lg" id="addModal" tabindex="-1" labelledby="addModalLabel" v-model="addModal">
         <form @submit.prevent="add">

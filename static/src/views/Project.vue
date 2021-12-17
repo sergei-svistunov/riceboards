@@ -1,36 +1,14 @@
 <template>
   <MDBContainer>
     <BContent :loading="loading" :error="error">
-      <MDBCol md="2" class="sidebar">
-        <h3 class="mt-3">{{ project.caption }}</h3>
-        <ul class="menu">
-          <li>
-            <router-link :to="`/projects/${$route.params['id']}`">
-              <MDBIcon icon="lightbulb" iconStyle="far" class="me-3"/>
-              Ideas
-            </router-link>
-          </li>
-          <li>
-            <router-link to="#">
-              <MDBIcon icon="cog" iconStyle="fas" class="me-3"/>
-              Settings
-            </router-link>
-            <ul class="submenu">
-              <li>
-                <router-link to="#">Goals</router-link>
-              </li>
-              <li>
-                <router-link to="#">Teams</router-link>
-              </li>
-              <li>
-                <router-link to="#">Confidence stages</router-link>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </MDBCol>
+      <MDBCol md="12">
+        <h1>
+          {{ project.caption }}
+          <MDBBtn color="light" floating size="md" style="margin-bottom: 0.5em;" class="float-end" title="Settings">
+            <MDBIcon icon="cog" iconStyle="fas" size="2x"/>
+          </MDBBtn>
+        </h1>
 
-      <MDBCol md="10">
         <router-view/>
       </MDBCol>
     </BContent>
@@ -39,13 +17,13 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {MDBCol, MDBContainer, MDBIcon} from "mdb-vue-ui-kit";
+import {MDBBtn, MDBCol, MDBContainer, MDBIcon} from "mdb-vue-ui-kit";
 import api, {ProjectsGetProjectV1} from "@/api";
 import BContent from "@/components/BContent.vue";
 
 export default defineComponent({
   name: 'Project',
-  components: {BContent, MDBContainer, MDBCol, MDBIcon},
+  components: {BContent, MDBBtn, MDBCol, MDBContainer, MDBIcon},
   data() {
     return {
       project: {} as ProjectsGetProjectV1,
