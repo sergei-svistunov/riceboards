@@ -22,7 +22,17 @@ const routes: Array<RouteRecordRaw> = [
                 component: () => import(/* webpackChunkName: "projects" */ '../views/project/Ideas.vue')
             }
         ]
-    }
+    },
+    {
+        path: '/privacy',
+        name: 'Privacy',
+        component: () => import(/* webpackChunkName: "privacy" */ '../views/Privacy.vue')
+    },
+    {
+        path: '/tos',
+        name: 'ToS',
+        component: () => import(/* webpackChunkName: "tos" */ '../views/ToS.vue')
+    },
 ]
 
 const router = createRouter({
