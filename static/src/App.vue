@@ -115,7 +115,7 @@ export default defineComponent({
   methods: {
     showLogin() {
       googleOneTap({
-        client_id: '709309428199-nnm1q8kikmg9n95f287suqmvoi0tm2go.apps.googleusercontent.com', // required
+        client_id: '1030387876775-48acocqe8ue99usaja3a70pis4125drl.apps.googleusercontent.com', // required
         auto_select: false, // optional
         cancel_on_tap_outside: false, // optional
         context: 'signin', // optional
