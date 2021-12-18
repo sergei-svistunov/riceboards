@@ -41,7 +41,7 @@
             </MDBTooltip>
           </th>
           <th>Impact</th>
-          <th>Confident</th>
+          <th>Confidence</th>
           <th>Effort
             <MDBTooltip v-model="tooltips['effort']" class="ms-1" style="cursor: help"
                         v-if="options.effort_description">
@@ -179,14 +179,15 @@
       <MDBIcon icon="info-circle" iconStyle="fas" class="me-1"/>
       {{ options.reach_description }}
     </div>
-    <MDBInput label="Reach" type="number" required v-model.number="editReachData.reach"/>
+    <MDBInput label="Reach" class="active" type="number" required v-model.number="editReachData.reach"/>
     <MDBTextarea label="Comment" class="mt-3" v-model="editReachData.reach_comment"/>
   </BIdeaEditModal>
 
   <BIdeaEditModal caption="Editing the idea goals" v-model="editGoalShow" :on-save="load"
                   :data="editGoalsData">
     <template v-for="goal in options.goals" :key="goal.id">
-      <MDBInput :label="goal.caption" type="number" step="any" required v-model.number="editGoalsData.goals[goal.id]"/>
+      <MDBInput :label="goal.caption" class="active" type="number" step="any" required
+                v-model.number="editGoalsData.goals[goal.id]"/>
       <MDBTextarea label="Comment" class="mt-1 mb-3" rows="2" v-model="editGoalsData.goals_comments[goal.id]"/>
     </template>
   </BIdeaEditModal>
@@ -194,13 +195,15 @@
   <BIdeaEditModal caption="Editing the idea confident" v-model="editConfidentShow" :on-save="load"
                   :data="editConfidentData">
     <div class="form-outline">
-      <select class="form-select" v-model="editConfidentData.confident">
+      <select class="form-control active" style="border: #bdbdbd solid thin" id="confident_select"
+              v-model="editConfidentData.confident">
         <option v-for="cl in options.confident_levels" :key="cl.id" :value="cl.id">
           {{ cl.caption }}&nbsp;({{ cl.weight }})
         </option>
       </select>
-      <MDBTextarea label="Comment" class="mt-3" v-model="editConfidentData.confident_comment"/>
+      <label class="form-label bg-white ps-1 pe-1" for="confident_select">Confidence</label>
     </div>
+    <MDBTextarea label="Comment" class="mt-3" v-model="editConfidentData.confident_comment"/>
   </BIdeaEditModal>
 
   <BIdeaEditModal caption="Editing the idea effort" v-model="editEffortShow" :on-save="load"
@@ -210,7 +213,8 @@
       {{ options.effort_description }}
     </div>
     <template v-for="team in options.teams" :key="team.id">
-      <MDBInput :label="team.caption" type="number" required v-model.number="editEffortData.teams[team.id]"/>
+      <MDBInput :label="team.caption" class="active" type="number" required
+                v-model.number="editEffortData.teams[team.id]"/>
       <MDBTextarea label="Comment" class="mt-1 mb-3" rows="2" v-model="editEffortData.teams_comments[team.id]"/>
     </template>
   </BIdeaEditModal>
