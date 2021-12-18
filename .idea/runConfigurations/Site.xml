@@ -5,6 +5,7 @@
     <envs>
       <env name="DEV" value="1" />
       <env name="DSN" value="go:123@tcp(127.0.0.1:3306)/riceboards" />
+      <env name="MYSQL_DEBUG" value="1" />
     </envs>
     <kind value="PACKAGE" />
     <package value="riceboards" />

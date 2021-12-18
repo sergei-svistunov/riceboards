@@ -15,6 +15,7 @@ import (
 	"riceboards/db/idea_teams"
 	"riceboards/db/ideas"
 	"riceboards/db/projects"
+	"riceboards/db/projects_users"
 	"riceboards/db/teams"
 	"riceboards/db/users"
 )
@@ -31,6 +32,7 @@ type Db struct {
 	Ideas           *ideas.Table
 	IdeaGoals       *idea_goals.Table
 	IdeaTeams       *idea_teams.Table
+	ProjectsUsers   *projects_users.Table
 }
 
 var reEmpty = regexp.MustCompile(`^\s*$`)
@@ -40,24 +42,24 @@ func New() *Db {
 
 	tUsers := users.New(storage)
 
-	tProject := projects.New(storage)
-	relation.AddManyToOne(tProject, tUsers, relation.WithAlias("owner"), relation.WithRequired(true))
+	tProjects := projects.New(storage)
+	relation.AddManyToOne(tProjects, tUsers, relation.WithAlias("owner"), relation.WithRequired(true))
 
 	tConfidentLevels := confident_levels.New(storage)
 	relation.AddManyToOne(tConfidentLevels, tUsers, relation.WithAlias("owner"), relation.WithRequired(true))
-	relation.AddManyToOne(tConfidentLevels, tProject, relation.WithAlias("project"), relation.WithRequired(true))
+	relation.AddManyToOne(tConfidentLevels, tProjects, relation.WithAlias("project"), relation.WithRequired(true))
 
 	tGoals := goals.New(storage)
 	relation.AddManyToOne(tGoals, tUsers, relation.WithAlias("owner"), relation.WithRequired(true))
-	relation.AddManyToOne(tGoals, tProject, relation.WithAlias("project"), relation.WithRequired(true))
+	relation.AddManyToOne(tGoals, tProjects, relation.WithAlias("project"), relation.WithRequired(true))
 
 	tTeams := teams.New(storage)
 	relation.AddManyToOne(tTeams, tUsers, relation.WithAlias("owner"), relation.WithRequired(true))
-	relation.AddManyToOne(tTeams, tProject, relation.WithAlias("project"), relation.WithRequired(true))
+	relation.AddManyToOne(tTeams, tProjects, relation.WithAlias("project"), relation.WithRequired(true))
 
 	tIdeas := ideas.New(storage)
 	relation.AddManyToOne(tIdeas, tUsers, relation.WithAlias("owner"), relation.WithRequired(true))
-	relation.AddManyToOne(tIdeas, tProject, relation.WithAlias("project"), relation.WithRequired(true))
+	relation.AddManyToOne(tIdeas, tProjects, relation.WithAlias("project"), relation.WithRequired(true))
 	relation.AddManyToOne(tIdeas, tConfidentLevels, relation.WithAlias("confident"), relation.WithRequired(false))
 
 	tIdeaGoals := idea_goals.New(storage)
@@ -70,11 +72,15 @@ func New() *Db {
 	relation.AddManyToOne(tIdeaTeams, tIdeas, relation.WithAlias("idea"), relation.WithRequired(true))
 	relation.AddManyToOne(tIdeaTeams, tTeams, relation.WithAlias("team"), relation.WithRequired(true))
 
+	tProjectsUsers := projects_users.New(storage)
+	relation.AddManyToOne(tProjectsUsers, tProjects, relation.WithAlias("project"), relation.WithRequired(true))
+	relation.AddManyToOne(tProjectsUsers, tUsers, relation.WithAlias("user"), relation.WithRequired(true))
+
 	return &Db{
 		storage,
 		tUsers,
-		tProject, tConfidentLevels, tGoals, tTeams,
-		tIdeas, tIdeaGoals, tIdeaTeams,
+		tProjects, tConfidentLevels, tGoals, tTeams,
+		tIdeas, tIdeaGoals, tIdeaTeams, tProjectsUsers,
 	}
 }
 
