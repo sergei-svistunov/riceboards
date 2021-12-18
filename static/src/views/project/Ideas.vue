@@ -8,7 +8,7 @@
       </MDBBtn>
 
       <MDBModal size="lg" id="addModal" tabindex="-1" labelledby="addModalLabel" v-model="addModal">
-        <form @submit.prevent="add">
+        <form @submit.prevent="add" @keypress="formKeyPress">
           <MDBModalHeader>
             <MDBModalTitle id="addModalLabel">Adding an idea</MDBModalTitle>
           </MDBModalHeader>
@@ -501,6 +501,14 @@ export default defineComponent({
       }
       this.editEffortShow = true
     },
+
+    formKeyPress(e: KeyboardEvent) {
+      if (e.keyCode === 13 && (e.target as HTMLElement).nodeName != "TEXTAREA") {
+        e.preventDefault();
+        this.add()
+      }
+    }
+
   },
 });
 
