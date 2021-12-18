@@ -7,6 +7,7 @@ import (
 	"github.com/go-qbit/rbac"
 
 	"riceboards/authctx"
+	"riceboards/db/projects"
 )
 
 const (
@@ -108,7 +109,7 @@ func (s *RbacStorage) GetRolesPermissions(ctx context.Context, rolesIds ...inter
 			}
 
 		case RoleUser:
-			res = append(res)
+			res = append(res, projects.PermView.GetFullId())
 		}
 	}
 

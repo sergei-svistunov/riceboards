@@ -3,10 +3,13 @@ package google
 import (
 	"context"
 	"log"
+	"strconv"
 
+	"github.com/go-qbit/rbac"
 	"github.com/go-qbit/rpc"
 	"google.golang.org/api/idtoken"
 
+	"riceboards/authctx"
 	"riceboards/db/users"
 )
 
@@ -15,11 +18,12 @@ type reqV1 struct {
 }
 
 type userV1 struct {
-	Id        uint32 `json:"id"`
-	Email     string `json:"email"`
-	Fullname  string `json:"fullname"`
-	AvatarUrl string `json:"avatar_url"`
-	Token     string `json:"token"`
+	Id          uint32   `json:"id"`
+	Email       string   `json:"email"`
+	Fullname    string   `json:"fullname"`
+	AvatarUrl   string   `json:"avatar_url"`
+	Token       string   `json:"token"`
+	Permissions []string `json:"permissions"`
 }
 
 var errorsV1 struct {
@@ -44,11 +48,29 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*userV1, error) {
 		AvatarUrl: p.Claims["picture"].(string),
 	})
 
+	user, err := m.db.Users.GetUserById(ctx, strconv.FormatUint(uint64(uid), 10))
+	if err != nil {
+		return nil, err
+	}
+	u := user.(authctx.User)
+	ctx = authctx.ToContext(ctx, &u)
+
+	roles, err := rbac.GetUserRolesIds(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	rolesPermissions, err := rbac.GetRolesPermissions(ctx, roles...)
+	if err != nil {
+		return nil, err
+	}
+
 	return &userV1{
-		Id:        uid,
-		Fullname:  p.Claims["name"].(string),
-		Email:     p.Claims["email"].(string),
-		AvatarUrl: p.Claims["picture"].(string),
-		Token:     m.auth.GetSessionId(uid),
+		Id:          uid,
+		Fullname:    p.Claims["name"].(string),
+		Email:       p.Claims["email"].(string),
+		AvatarUrl:   p.Claims["picture"].(string),
+		Token:       m.auth.GetSessionId(uid),
+		Permissions: rolesPermissions,
 	}, nil
 }

@@ -119,6 +119,7 @@ export interface AuthGoogleUserV1 {
     fullname: string;
     avatar_url: string;
     token: string;
+    permissions: string[];
 }
 
 // eslint-disable-next-line

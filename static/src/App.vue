@@ -9,7 +9,9 @@
 
     <MDBCollapse v-model="collapse" id="navbarSupportedContent">
       <MDBNavbarNav class="mb-2 mb-lg-0">
-        <MDBNavbarItem to="/projects" :active="$route.path.startsWith('/projects')">Projects</MDBNavbarItem>
+        <MDBNavbarItem to="/projects" :active="$route.path.startsWith('/projects')"
+                       v-if="$rbac.hasPermission('project.view')">Projects
+        </MDBNavbarItem>
       </MDBNavbarNav>
     </MDBCollapse>
 
@@ -25,7 +27,8 @@
         />
         </MDBDropdownToggle>
         <MDBDropdownMenu animation>
-          <MDBDropdownItem href="#logout" @click.prevent="$store.commit('removeUser');showLogin()">Logout
+          <MDBDropdownItem href="#logout"
+                           @click.prevent="$store.commit('removeUser');$rbac.setPermissions([]);showLogin()">Logout
           </MDBDropdownItem>
         </MDBDropdownMenu>
       </MDBDropdown>
@@ -98,8 +101,10 @@ export default defineComponent({
     if (localStorage.getItem('token')) {
       api.AuthMeV1({}).then(user => {
         this.$store.commit('setUser', user)
+        this.$rbac.setPermissions(user.permissions)
       }).catch(() => {
         this.$store.commit('removeUser')
+        this.$rbac.setPermissions([])
         this.showLogin()
       })
     } else {
@@ -119,6 +124,7 @@ export default defineComponent({
           credential: response.credential
         }).then(user => {
           this.$store.commit('setUser', user)
+          this.$rbac.setPermissions(user.permissions)
         }).catch(err => {
           alert(err)
         })
