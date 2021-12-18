@@ -1,38 +1,49 @@
 <template>
   <MDBContainer>
     <BContent :loading="loading" :error="error">
-      <h1>Projects
-        <MDBBtn color="primary" floating size="md" style="margin-bottom: -0.5em;" title="Add a new project" aria-controls="addModal"
-                @click="addForm">
-          <MDBIcon icon="plus" iconStyle="fas"/>
+      <MDBCol md="12" class="mt-3">
+        <h1>My projects</h1>
+
+        <MDBTable striped sm class="mt-3">
+          <tbody>
+          <tr v-for="project in projects" :key="project.id">
+            <td class="position-relative">
+              <router-link :to="`/projects/${project.id}`" class="stretched-link">{{ project.caption }}</router-link>
+            </td>
+          </tr>
+          </tbody>
+        </MDBTable>
+
+        <div class="alert alert-warning" v-if="projects.length === 0">No projects was found</div>
+
+        <MDBBtn outline="primary" rounded size="md" style="margin-bottom: 0.5em;"
+                aria-controls="addModal" @click="addForm">
+          <MDBIcon icon="plus" iconStyle="fas" class="me-1"/>
+          Add a project
         </MDBBtn>
-      </h1>
 
-      <MDBModal size="lg" id="addModal" tabindex="-1" labelledby="addModalLabel" v-model="addModal">
-        <form @submit.prevent="add">
-          <MDBModalHeader>
-            <MDBModalTitle id="addModalLabel">Adding a project</MDBModalTitle>
-          </MDBModalHeader>
-
-          <MDBModalBody>
-            <MDBInput label="Caption" required v-model="addData.caption" :disabled="adding"/>
-
-            <div class="alert alert-danger mt-3" v-if="addError">{{ addError }}</div>
-          </MDBModalBody>
-
-          <MDBModalFooter>
-            <MDBBtn color="primary" type="submit" :disabled="adding">Add</MDBBtn>
-          </MDBModalFooter>
-        </form>
-      </MDBModal>
-
-      <MDBCol md="12" class="mt-3" v-for="project in projects" :key="project.id">
-        <router-link :to="`/projects/${project.id}`">{{ project.caption }}</router-link>
       </MDBCol>
 
-      <div class="alert alert-warning" v-if="projects.length === 0">No projects was found</div>
     </BContent>
   </MDBContainer>
+
+  <MDBModal size="lg" id="addModal" tabindex="-1" labelledby="addModalLabel" v-model="addModal">
+    <form @submit.prevent="add">
+      <MDBModalHeader>
+        <MDBModalTitle id="addModalLabel">Adding a project</MDBModalTitle>
+      </MDBModalHeader>
+
+      <MDBModalBody>
+        <MDBInput label="Caption" required v-model="addData.caption" :disabled="adding"/>
+
+        <div class="alert alert-danger mt-3" v-if="addError">{{ addError }}</div>
+      </MDBModalBody>
+
+      <MDBModalFooter>
+        <MDBBtn color="primary" type="submit" :disabled="adding">Add</MDBBtn>
+      </MDBModalFooter>
+    </form>
+  </MDBModal>
 </template>
 
 <script lang="ts">
@@ -49,7 +60,8 @@ import {
   MDBModalBody,
   MDBModalFooter,
   MDBModalHeader,
-  MDBModalTitle
+  MDBModalTitle,
+  MDBTable
 } from "mdb-vue-ui-kit";
 
 export default defineComponent({
@@ -65,7 +77,8 @@ export default defineComponent({
     MDBModalBody,
     MDBModalFooter,
     MDBModalHeader,
-    MDBModalTitle
+    MDBModalTitle,
+    MDBTable
   },
   data() {
     return {

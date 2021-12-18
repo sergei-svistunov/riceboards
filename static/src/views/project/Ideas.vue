@@ -1,9 +1,9 @@
 <template>
   <BContent :loading="loading || optionsLoading" :error="error || optionsError">
     <MDBCol md="12">
-      <MDBBtn outline="primary" rounded size="md" style="margin-bottom: 0.5em;" title="Add a new idea"
+      <MDBBtn outline="primary" rounded size="md" style="margin-bottom: 0.5em;"
               aria-controls="addModal" @click="addForm">
-        <MDBIcon icon="plus" iconStyle="fas" class="me-1"/>Add a new idea
+        <MDBIcon icon="plus" iconStyle="fas" class="me-1"/>Add an idea
       </MDBBtn>
 
       <MDBModal size="lg" id="addModal" tabindex="-1" labelledby="addModalLabel" v-model="addModal">
