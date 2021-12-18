@@ -1,5 +1,5 @@
 <template>
-  <MDBContainer>
+  <MDBContainer class="mt-3">
     <BContent :loading="loading" :error="error">
       <MDBCol md="12">
         <h1>

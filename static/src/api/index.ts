@@ -200,6 +200,10 @@ export interface IdeasOptionsGoalV1 {
 }
 
 export interface IdeasOptionsOptionsV1 {
+    reach_format: number;
+    reach_description: string;
+    effort_description: string;
+    money_symbol: string;
     confident_levels: IdeasOptionsConfidentV1[];
     goals: IdeasOptionsGoalV1[];
     teams: IdeasOptionsTeamV1[];

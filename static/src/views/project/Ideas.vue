@@ -3,7 +3,8 @@
     <MDBCol md="12">
       <MDBBtn outline="primary" rounded size="md" style="margin-bottom: 0.5em;"
               aria-controls="addModal" @click="addForm">
-        <MDBIcon icon="plus" iconStyle="fas" class="me-1"/>Add an idea
+        <MDBIcon icon="plus" iconStyle="fas" class="me-1"/>
+        Add an idea
       </MDBBtn>
 
       <MDBModal size="lg" id="addModal" tabindex="-1" labelledby="addModalLabel" v-model="addModal">
@@ -29,10 +30,29 @@
         <thead>
         <tr>
           <th>Idea</th>
-          <th>Reach</th>
+          <th>Reach
+            <MDBTooltip v-model="tooltips['reach']" class="ms-1" style="cursor: help" v-if="options.reach_description">
+              <template #reference>
+                <MDBIcon icon="info-circle" iconStyle="fas"/>
+              </template>
+              <template #tip>
+                {{ options.reach_description }}
+              </template>
+            </MDBTooltip>
+          </th>
           <th>Impact</th>
           <th>Confident</th>
-          <th>Effort</th>
+          <th>Effort
+            <MDBTooltip v-model="tooltips['effort']" class="ms-1" style="cursor: help"
+                        v-if="options.effort_description">
+              <template #reference>
+                <MDBIcon icon="info-circle" iconStyle="fas"/>
+              </template>
+              <template #tip>
+                {{ options.effort_description }}
+              </template>
+            </MDBTooltip>
+          </th>
           <th>Score</th>
         </tr>
         </thead>
@@ -47,7 +67,7 @@
           </th>
 
           <td class="position-relative">
-            <template v-if="idea.reach !== undefined">{{ idea.reach }}</template>
+            <template v-if="idea.reach !== undefined">{{ formatNumber(idea.reach, options.reach_format) }}</template>
             <span class="text-muted" v-else>&mdash;</span>
             <MDBTooltip v-model="tooltips[`reach${idea.id}`]" class="ms-1" style="cursor: help"
                         v-if="idea.reach_comment">
@@ -155,6 +175,10 @@
 
   <BIdeaEditModal caption="Editing the idea reach" id="reachEdit" v-model="editReachShow" :on-save="load"
                   :data="editReachData">
+    <div class="alert alert-info show" v-if="options.reach_description">
+      <MDBIcon icon="info-circle" iconStyle="fas" class="me-1"/>
+      {{ options.reach_description }}
+    </div>
     <MDBInput label="Reach" type="number" required v-model.number="editReachData.reach"/>
     <MDBTextarea label="Comment" class="mt-3" v-model="editReachData.reach_comment"/>
   </BIdeaEditModal>
@@ -181,6 +205,10 @@
 
   <BIdeaEditModal caption="Editing the idea effort" v-model="editEffortShow" :on-save="load"
                   :data="editEffortData">
+    <div class="alert alert-info show" v-if="options.effort_description">
+      <MDBIcon icon="info-circle" iconStyle="fas" class="me-1"/>
+      {{ options.effort_description }}
+    </div>
     <template v-for="team in options.teams" :key="team.id">
       <MDBInput :label="team.caption" type="number" required v-model.number="editEffortData.teams[team.id]"/>
       <MDBTextarea label="Comment" class="mt-1 mb-3" rows="2" v-model="editEffortData.teams_comments[team.id]"/>
@@ -379,7 +407,7 @@ export default defineComponent({
         case 1:
           return filters.formatFloat(n) + '%'
         case 2:
-          return '$' + filters.formatFloat(n)
+          return this.options.money_symbol + filters.formatFloat(n)
         default:
           return filters.formatFloat(n)
       }

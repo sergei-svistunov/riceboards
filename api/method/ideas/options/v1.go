@@ -2,6 +2,7 @@ package options
 
 import (
 	"context"
+	"sort"
 
 	"github.com/go-qbit/model"
 	"github.com/go-qbit/model/expr"
@@ -12,9 +13,13 @@ type reqV1 struct {
 }
 
 type optionsV1 struct {
-	ConfidentLevels []ConfidentV1 `json:"confident_levels"`
-	Goals           []goalV1      `json:"goals"`
-	Teams           []teamV1      `json:"teams"`
+	ReachFormat       uint8         `json:"reach_format"`
+	ReachDescription  string        `json:"reach_description"`
+	EffortDescription string        `json:"effort_description"`
+	MoneySymbol       string        `json:"money_symbol"`
+	ConfidentLevels   []ConfidentV1 `json:"confident_levels"`
+	Goals             []goalV1      `json:"goals"`
+	Teams             []teamV1      `json:"teams"`
 }
 
 type ConfidentV1 struct {
@@ -36,39 +41,31 @@ type teamV1 struct {
 }
 
 func (m *Method) V1(ctx context.Context, r *reqV1) (*optionsV1, error) {
-	var confidentLevels []ConfidentV1
-	if err := m.db.ConfidentLevels.GetAllToStruct(ctx, &confidentLevels, model.GetAllOptions{
-		Filter: expr.Eq(m.db.ConfidentLevels.FieldExpr("fk_project_id"), expr.Value(r.ProjectId)),
-		OrderBy: []model.Order{
-			{"weight", false},
-		},
+	var projects []optionsV1
+	if err := m.db.Projects.GetAllToStruct(ctx, &projects, model.GetAllOptions{
+		Filter: expr.Eq(m.db.Projects.FieldExpr("id"), expr.Value(r.ProjectId)),
+		Limit:  1,
 	}); err != nil {
 		return nil, err
 	}
 
-	var goals []goalV1
-	if err := m.db.Goals.GetAllToStruct(ctx, &goals, model.GetAllOptions{
-		Filter: expr.Eq(m.db.Goals.FieldExpr("fk_project_id"), expr.Value(r.ProjectId)),
-		OrderBy: []model.Order{
-			{"caption", false},
-		},
-	}); err != nil {
-		return nil, err
+	if len(projects) == 0 {
+		return nil, nil
 	}
 
-	var teams []teamV1
-	if err := m.db.Teams.GetAllToStruct(ctx, &teams, model.GetAllOptions{
-		Filter: expr.Eq(m.db.Teams.FieldExpr("fk_project_id"), expr.Value(r.ProjectId)),
-		OrderBy: []model.Order{
-			{"caption", false},
-		},
-	}); err != nil {
-		return nil, err
-	}
+	project := projects[0]
 
-	return &optionsV1{
-		ConfidentLevels: confidentLevels,
-		Goals:           goals,
-		Teams:           teams,
-	}, nil
+	sort.Slice(project.ConfidentLevels, func(i, j int) bool {
+		return project.ConfidentLevels[i].Weight < project.ConfidentLevels[j].Weight
+	})
+
+	sort.Slice(project.Goals, func(i, j int) bool {
+		return project.Goals[i].Caption < project.Goals[j].Caption
+	})
+
+	sort.Slice(project.Teams, func(i, j int) bool {
+		return project.Teams[i].Caption < project.Teams[j].Caption
+	})
+
+	return &project, nil
 }

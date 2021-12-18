@@ -1,6 +1,6 @@
 <template>
   <MDBModal size="lg" :id="id" tabindex="-1" :labelledby="`${id}Label`" v-model="showModal">
-    <form @submit.prevent="onSave">
+    <form @submit.prevent="onSave" @keypress="formKeyPress">
       <MDBModalHeader>
         <MDBModalTitle :id="`${id}Label`">{{ caption }}</MDBModalTitle>
       </MDBModalHeader>
@@ -46,6 +46,14 @@ export default defineComponent({
   watch: {
     show(value) {
       this.showModal = value
+    }
+  },
+  methods: {
+    formKeyPress(e: KeyboardEvent) {
+      if (e.keyCode === 13 && (e.target as HTMLElement).nodeName != "TEXTAREA") {
+        e.preventDefault();
+        this.onSave()
+      }
     }
   }
 });

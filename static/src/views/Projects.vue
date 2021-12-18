@@ -28,7 +28,7 @@
   </MDBContainer>
 
   <MDBModal size="lg" id="addModal" tabindex="-1" labelledby="addModalLabel" v-model="addModal">
-    <form @submit.prevent="add">
+    <form @submit.prevent="add" @keypress="formKeyPress">
       <MDBModalHeader>
         <MDBModalTitle id="addModalLabel">Adding a project</MDBModalTitle>
       </MDBModalHeader>
@@ -127,6 +127,13 @@ export default defineComponent({
       }).finally(() => {
         this.adding = false
       })
+    },
+
+    formKeyPress(e: KeyboardEvent) {
+      if (e.keyCode === 13 && (e.target as HTMLElement).nodeName != "TEXTAREA") {
+        e.preventDefault();
+        this.add()
+      }
     }
   }
 });

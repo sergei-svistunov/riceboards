@@ -15,6 +15,10 @@ var (
 	PermGroup = rbac.NewPermissionsGroup("project", "Model project")
 
 	PermView = PermGroup.NewPermission("view", "View projects")
+
+	zeroVal  = uint8(0)
+	emptyStr = ""
+	usdStr   = "$"
 )
 
 type Table struct {
@@ -35,6 +39,33 @@ func New(db *mysql.MySQL) *Table {
 					Id:      "caption",
 					Length:  255,
 					NotNull: true,
+				},
+
+				&mysql.TinyUintField{
+					Id:      "reach_format",
+					NotNull: true,
+					Default: &zeroVal,
+				},
+
+				&mysql.VarCharField{
+					Id:      "reach_description",
+					NotNull: true,
+					Length:  255,
+					Default: &emptyStr,
+				},
+
+				&mysql.VarCharField{
+					Id:      "effort_description",
+					NotNull: true,
+					Length:  255,
+					Default: &emptyStr,
+				},
+
+				&mysql.VarCharField{
+					Id:      "money_symbol",
+					NotNull: true,
+					Length:  7,
+					Default: &usdStr,
 				},
 			},
 

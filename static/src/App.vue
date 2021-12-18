@@ -52,7 +52,7 @@
     </MDBNavbarNav>
   </MDBNavbar>
 
-  <router-view class="mt-3"/>
+  <router-view/>
 </template>
 
 <script>
