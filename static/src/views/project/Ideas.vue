@@ -54,6 +54,7 @@
             </MDBTooltip>
           </th>
           <th>Score</th>
+          <th>&ensp;</th>
         </tr>
         </thead>
 
@@ -61,7 +62,7 @@
         <tr v-for="idea in ideasView" :key="idea.id" :class="{'table-warning': idea.score === undefined}">
           <th class="position-relative">
             <BUser :name="idea.owner.fullname" :email="idea.owner.email" :avatar-url="idea.owner.avatar_url"
-                   :hide-name="true" :avatar-size="20"/>
+                   :hide-name="true" avatar-size="20"/>
             {{ idea.caption }}
             <a class="edit-link" @click.prevent="editCaption(idea)">
               <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
@@ -164,6 +165,12 @@
               {{ $filters.formatFloat(idea.score) }}
             </template>
           </th>
+
+          <td>
+            <a class="action-link link-danger" @click.prevent="showDeleteDialog(idea)">
+              <MDBIcon icon="trash" iconStyle="fas"/>
+            </a>
+          </td>
         </tr>
         </tbody>
       </MDBTable>
@@ -221,6 +228,11 @@
     </template>
   </BIdeaEditModal>
 
+  <BConfirmModal v-model="deleteConfirmShow" yes-btn="Yes" no-btn="Cancel" :callback="deleteIdea">
+    <p class="font-weight-bold">Are you sure to delete the idea "{{ deleteIdeaCur.caption }}"?</p>
+    <p>The operation cannot be undone!</p>
+  </BConfirmModal>
+
 </template>
 
 <script lang="ts">
@@ -254,10 +266,12 @@ import BContent from "@/components/BContent.vue";
 import BIdeaEditModal from "@/components/BIdeaEditModal.vue";
 import filters from "@/filters/format";
 import BUser from "@/components/BUser.vue";
+import BConfirmModal from "@/components/BConfirmModal.vue";
 
 export default defineComponent({
   name: 'ProjectIdeas',
   components: {
+    BConfirmModal,
     BUser,
     BIdeaEditModal,
     BContent,
@@ -377,6 +391,8 @@ export default defineComponent({
         teams_comments: {} as { [key: number]: string },
       },
 
+      deleteConfirmShow: false,
+      deleteIdeaCur: {} as ideaView,
     }
   },
   mounted() {
@@ -512,6 +528,20 @@ export default defineComponent({
       this.editEffortShow = true
     },
 
+    showDeleteDialog(idea: ideaView) {
+      this.deleteIdeaCur = idea
+      this.deleteConfirmShow = true
+    },
+
+    deleteIdea(): Promise<any> {
+      return api.IdeasDeleteV1({id: this.deleteIdeaCur.id}).then(v => {
+        return new Promise<any>((resolve) => {
+          this.load()
+          resolve(v)
+        })
+      })
+    },
+
     formKeyPress(e: KeyboardEvent) {
       if (e.keyCode === 13 && (e.target as HTMLElement).nodeName != "TEXTAREA") {
         e.preventDefault();
@@ -547,6 +577,15 @@ interface ideaView {
 }
 
 th:hover a.edit-link .edit-icon, td:hover a.edit-link .edit-icon {
+  visibility: visible;
+}
+
+.action-link {
+  visibility: hidden;
+  cursor: pointer;
+}
+
+tr:hover a.action-link, tr:hover a.action-link {
   visibility: visible;
 }
 </style>

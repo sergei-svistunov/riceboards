@@ -78,6 +78,11 @@ export default class API {
         return this.post('/ideas/add/v1', request)
     }
 
+    // Delete the idea
+    public static IdeasDeleteV1(request: IdeasDeleteReqV1): Promise<Struct_c7d8f8ae> {
+        return this.post('/ideas/delete/v1', request)
+    }
+
     // Add a new idea
     public static IdeasEditV1(request: IdeasEditReqV1): Promise<Struct_c7d8f8ae> {
         return this.post('/ideas/edit/v1', request)
@@ -142,6 +147,10 @@ export interface IdeasAddIdeaV1 {
 export interface IdeasAddReqV1 {
     project_id: number;
     caption: string;
+}
+
+export interface IdeasDeleteReqV1 {
+    id: number;
 }
 
 export interface IdeasEditReqV1 {

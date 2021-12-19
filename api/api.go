@@ -14,6 +14,7 @@ import (
 	mAuthGoogle "riceboards/api/method/auth/google"
 	mAuthMe "riceboards/api/method/auth/me"
 	mIdeasAdd "riceboards/api/method/ideas/add"
+	mIdeasDelete "riceboards/api/method/ideas/delete"
 	mIdeasEdit "riceboards/api/method/ideas/edit"
 	mIdeasList "riceboards/api/method/ideas/list"
 	mIdeasOptions "riceboards/api/method/ideas/options"
@@ -34,6 +35,7 @@ func New(db *db.Db, auth *webAuth.Auth) http.Handler {
 		mProjectsGet.New(db),
 		mProjectsList.New(db),
 		mIdeasAdd.New(db),
+		mIdeasDelete.New(db),
 		mIdeasEdit.New(db),
 		mIdeasList.New(db),
 		mIdeasOptions.New(db),
