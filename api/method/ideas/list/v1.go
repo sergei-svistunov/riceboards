@@ -24,6 +24,7 @@ type ideaV1 struct {
 	ConfidentComment *string      `json:"confident_comment,omitempty"`
 	Goals            []IdeaGoalV1 `json:"goals,omitempty" field:"idea_goals"`
 	Teams            []IdeaTeamV1 `json:"teams,omitempty" field:"idea_teams"`
+	Owner            UserV1       `json:"owner"`
 }
 
 type IdeaGoalV1 struct {
@@ -36,6 +37,12 @@ type IdeaTeamV1 struct {
 	Id       uint32  `json:"id" field:"fk_team_id"`
 	Capacity float64 `json:"capacity"`
 	Comment  *string `json:"comment"`
+}
+
+type UserV1 struct {
+	Fullname  string `json:"fullname"`
+	Email     string `json:"email"`
+	AvatarUrl string `json:"avatar_url"`
 }
 
 func (m *Method) V1(ctx context.Context, r *reqV1) ([]ideaV1, error) {

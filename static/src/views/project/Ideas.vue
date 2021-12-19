@@ -60,6 +60,8 @@
         <tbody>
         <tr v-for="idea in ideasView" :key="idea.id" :class="{'table-warning': idea.score === undefined}">
           <th class="position-relative">
+            <BUser :name="idea.owner.fullname" :email="idea.owner.email" :avatar-url="idea.owner.avatar_url"
+                   :hide-name="true" :avatar-size="20"/>
             {{ idea.caption }}
             <a class="edit-link" @click.prevent="editCaption(idea)">
               <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
@@ -242,6 +244,7 @@ import api, {
   IdeasListIdeaGoalV1,
   IdeasListIdeaTeamV1,
   IdeasListIdeaV1,
+  IdeasListUserV1,
   IdeasOptionsConfidentV1,
   IdeasOptionsGoalV1,
   IdeasOptionsOptionsV1,
@@ -250,10 +253,12 @@ import api, {
 import BContent from "@/components/BContent.vue";
 import BIdeaEditModal from "@/components/BIdeaEditModal.vue";
 import filters from "@/filters/format";
+import BUser from "@/components/BUser.vue";
 
 export default defineComponent({
   name: 'ProjectIdeas',
   components: {
+    BUser,
     BIdeaEditModal,
     BContent,
     MDBBadge,
@@ -305,7 +310,8 @@ export default defineComponent({
           confident_comment: idea.confident_comment,
           goals: goals,
           teams: teams,
-          score: score
+          score: score,
+          owner: idea.owner
         }
       }).sort((a, b) => {
         return (b.score || 0) - (a.score || 0)
@@ -526,6 +532,7 @@ interface ideaView {
   goals: { [key: number]: IdeasListIdeaGoalV1 }
   teams: { [key: number]: IdeasListIdeaTeamV1 }
   score?: number
+  owner: IdeasListUserV1
 }
 </script>
 

@@ -180,10 +180,17 @@ export interface IdeasListIdeaV1 {
     confident_comment?: string;
     goals: IdeasListIdeaGoalV1[];
     teams: IdeasListIdeaTeamV1[];
+    owner: IdeasListUserV1;
 }
 
 export interface IdeasListReqV1 {
     project_id: number;
+}
+
+export interface IdeasListUserV1 {
+    fullname: string;
+    email: string;
+    avatar_url: string;
 }
 
 export interface IdeasOptionsConfidentV1 {
