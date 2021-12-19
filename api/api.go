@@ -19,6 +19,7 @@ import (
 	mIdeasList "riceboards/api/method/ideas/list"
 	mIdeasOptions "riceboards/api/method/ideas/options"
 	mProjectsAdd "riceboards/api/method/projects/add"
+	mProjectsEdit "riceboards/api/method/projects/edit"
 	mProjectsGet "riceboards/api/method/projects/get"
 	mProjectsList "riceboards/api/method/projects/list"
 	"riceboards/authctx"
@@ -33,6 +34,7 @@ func New(db *db.Db, auth *webAuth.Auth) http.Handler {
 		mAuthMe.New(db),
 		mProjectsAdd.New(db),
 		mProjectsGet.New(db),
+		mProjectsEdit.New(db),
 		mProjectsList.New(db),
 		mIdeasAdd.New(db),
 		mIdeasDelete.New(db),

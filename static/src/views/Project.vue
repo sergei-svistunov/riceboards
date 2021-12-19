@@ -4,7 +4,8 @@
       <MDBCol md="12">
         <h1>
           {{ project.caption }}
-          <MDBBtn color="light" floating size="md" style="margin-bottom: 0.5em;" class="float-end" title="Settings">
+          <MDBBtn color="light" floating size="md" style="margin-bottom: 0.5em;" class="float-end" title="Settings"
+                  tag="a" :href="`/projects/${project.id}/settings`">
             <MDBIcon icon="cog" iconStyle="fas" size="2x"/>
           </MDBBtn>
         </h1>

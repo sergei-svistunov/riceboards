@@ -20,6 +20,10 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '',
                 component: () => import(/* webpackChunkName: "projects" */ '../views/project/Ideas.vue')
+            },
+            {
+                path: 'settings',
+                component: () => import(/* webpackChunkName: "projects" */ '../views/project/Settings.vue')
             }
         ]
     },

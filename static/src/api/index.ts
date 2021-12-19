@@ -103,6 +103,11 @@ export default class API {
         return this.post('/projects/add/v1', request)
     }
 
+    // Edit the project
+    public static ProjectsEditV1(request: ProjectsEditReqV1): Promise<Struct_c7d8f8ae> {
+        return this.post('/projects/edit/v1', request)
+    }
+
     // Returns the project
     public static ProjectsGetV1(request: ProjectsGetReqV1): Promise<ProjectsGetProjectV1> {
         return this.post('/projects/get/v1', request)
@@ -216,6 +221,7 @@ export interface IdeasOptionsGoalV1 {
 }
 
 export interface IdeasOptionsOptionsV1 {
+    caption: string;
     reach_format: number;
     reach_description: string;
     effort_description: string;
@@ -241,6 +247,15 @@ export interface ProjectsAddProjectV1 {
 
 export interface ProjectsAddReqV1 {
     caption: string;
+}
+
+export interface ProjectsEditReqV1 {
+    id: number;
+    caption: string;
+    reach_format: number;
+    reach_description: string;
+    effort_description: string;
+    money_symbol: string;
 }
 
 export interface ProjectsGetProjectV1 {

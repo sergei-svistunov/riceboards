@@ -13,6 +13,7 @@ type reqV1 struct {
 }
 
 type optionsV1 struct {
+	Caption           string        `json:"caption"`
 	ReachFormat       uint8         `json:"reach_format"`
 	ReachDescription  string        `json:"reach_description"`
 	EffortDescription string        `json:"effort_description"`
