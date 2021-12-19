@@ -1,7 +1,13 @@
 <template>
-  <MDBContainer>
+  <MDBContainer class="mt-3">
     <BContent :loading="loading" :error="error">
       <MDBCol>
+        <router-link :to="`/projects/${$route.params['id']}`" class="float-end">
+          Back to ideas
+        </router-link>
+
+        <h1>{{ options.caption }}</h1>
+
         <MDBTabs v-model="activeTab" vertical>
           <!-- Tabs navs -->
           <MDBTabNav tabsClasses="mb-3" col="3">
@@ -15,8 +21,9 @@
           <!-- Tabs content -->
           <MDBTabContent col="9">
             <MDBTabPane tabId="settings">
+              <h3>Settings</h3>
               <form @submit.prevent="editSettings">
-                <MDBInput label="Caption" maxLength="255" required v-model="options.caption"
+                <MDBInput label="Caption" maxLength="255" required class="mt-3" v-model="options.caption"
                           :disabled="editingSettings"/>
                 <div class="form-outline mt-3">
                   <select class="form-control active" style="border: #bdbdbd solid thin" id="reach_select"
@@ -41,13 +48,85 @@
               </form>
             </MDBTabPane>
 
-            <MDBTabPane tabId="users">Coming soon</MDBTabPane>
+            <MDBTabPane tabId="users">
+              <h3>Users</h3>
+              <MDBTable striped sm class="mt-3">
+                <thead>
+                <tr>
+                  <th>User</th>
+                  <th>&ensp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="user in options.users" :key="user.email">
+                  <td>
+                    <BUser :name="user.fullname" :email="user.email" :avatar-url="user.avatar_url" avatar-size="24"/>
+                  </td>
+                  <td></td>
+                </tr>
+                </tbody>
+              </MDBTable>
+            </MDBTabPane>
 
-            <MDBTabPane tabId="goals">Coming soon</MDBTabPane>
+            <MDBTabPane tabId="goals">
+              <h3>Goals</h3>
+              <MDBTable striped sm class="mt-3">
+                <thead>
+                <tr>
+                  <th>Caption</th>
+                  <th>Format</th>
+                  <th>Divider</th>
+                  <th>&ensp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="goal in options.goals" :key="goal.id">
+                  <td>{{ goal.caption }}</td>
+                  <td>{{ formatsMap[goal.format] }}</td>
+                  <td>{{ $filters.formatFloat(goal.divider) }}</td>
+                  <td></td>
+                </tr>
+                </tbody>
+              </MDBTable>
+            </MDBTabPane>
 
-            <MDBTabPane tabId="teams">Coming soon</MDBTabPane>
+            <MDBTabPane tabId="teams">
+              <h3>Teams</h3>
+              <MDBTable striped sm class="mt-3">
+                <thead>
+                <tr>
+                  <th>Caption</th>
+                  <th>&ensp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="team in options.teams" :key="team.id">
+                  <td>{{ team.caption }}</td>
+                  <td></td>
+                </tr>
+                </tbody>
+              </MDBTable>
+            </MDBTabPane>
 
-            <MDBTabPane tabId="confidence">Coming soon</MDBTabPane>
+            <MDBTabPane tabId="confidence">
+              <h3>Confidence</h3>
+              <MDBTable striped sm responsive class="mt-3">
+                <thead>
+                <tr>
+                  <th>Weight</th>
+                  <th>Caption</th>
+                  <th>&ensp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="level in options.confident_levels" :key="level.id">
+                  <td>{{ level.weight }}</td>
+                  <td>{{ level.caption }}</td>
+                  <td></td>
+                </tr>
+                </tbody>
+              </MDBTable>
+            </MDBTabPane>
           </MDBTabContent>
           <!-- Tabs content -->
         </MDBTabs>
@@ -65,16 +144,19 @@ import {
   MDBInput,
   MDBTabContent,
   MDBTabItem,
+  MDBTable,
   MDBTabNav,
   MDBTabPane,
   MDBTabs
 } from "mdb-vue-ui-kit";
 import BContent from "@/components/BContent.vue";
 import api, {IdeasOptionsOptionsV1} from "@/api";
+import BUser from "@/components/BUser.vue";
 
 export default defineComponent({
   name: 'ProjectSettings',
   components: {
+    BUser,
     BContent,
     MDBBtn,
     MDBCol,
@@ -82,6 +164,7 @@ export default defineComponent({
     MDBInput,
     MDBTabContent,
     MDBTabItem,
+    MDBTable,
     MDBTabNav,
     MDBTabPane,
     MDBTabs
@@ -93,8 +176,23 @@ export default defineComponent({
       loading: true,
       error: '',
 
+      formats: [
+        {id: 0, label: 'Number'},
+        {id: 1, label: 'Percents'},
+        {id: 2, label: 'Money'},
+      ],
+
       editingSettings: false,
       settingsError: ''
+    }
+  },
+
+  computed: {
+    formatsMap(): { [key: number]: string } {
+      return this.formats.reduce((res, f) => {
+        res[f.id] = f.label
+        return res
+      }, {} as { [key: number]: string })
     }
   },
 
@@ -108,7 +206,8 @@ export default defineComponent({
       this.error = ''
 
       api.IdeasOptionsV1({
-        project_id: parseInt(this.$route.params['id'] as string)
+        project_id: parseInt(this.$route.params['id'] as string),
+        with_users: true
       }).then(options => {
         this.options = options
       }).catch(err => {

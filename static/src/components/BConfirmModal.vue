@@ -26,6 +26,7 @@ export default defineComponent({
     noBtn: String,
     modelValue: Boolean,
     callback: {
+      // eslint-disable-next-line
       type: Function as PropType<() => Promise<any>>,
       required: true,
     }

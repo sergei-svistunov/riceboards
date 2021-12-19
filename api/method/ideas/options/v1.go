@@ -10,6 +10,7 @@ import (
 
 type reqV1 struct {
 	ProjectId uint32 `json:"project_id"`
+	WithUsers *bool  `json:"with_users"`
 }
 
 type optionsV1 struct {
@@ -18,12 +19,13 @@ type optionsV1 struct {
 	ReachDescription  string        `json:"reach_description"`
 	EffortDescription string        `json:"effort_description"`
 	MoneySymbol       string        `json:"money_symbol"`
-	ConfidentLevels   []ConfidentV1 `json:"confident_levels"`
+	ConfidentLevels   []confidentV1 `json:"confident_levels"`
 	Goals             []goalV1      `json:"goals"`
 	Teams             []teamV1      `json:"teams"`
+	Users             []userV1      `json:"users,omitempty" field:"-"`
 }
 
-type ConfidentV1 struct {
+type confidentV1 struct {
 	Id      uint32  `json:"id"`
 	Caption string  `json:"caption"`
 	Weight  float64 `json:"weight"`
@@ -39,6 +41,12 @@ type goalV1 struct {
 type teamV1 struct {
 	Id      uint32 `json:"id"`
 	Caption string `json:"caption"`
+}
+
+type userV1 struct {
+	Fullname  string `json:"fullname"`
+	Email     string `json:"email"`
+	AvatarUrl string `json:"avatar_url"`
 }
 
 func (m *Method) V1(ctx context.Context, r *reqV1) (*optionsV1, error) {
@@ -67,6 +75,27 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*optionsV1, error) {
 	sort.Slice(project.Teams, func(i, j int) bool {
 		return project.Teams[i].Caption < project.Teams[j].Caption
 	})
+
+	if r.WithUsers != nil && *r.WithUsers {
+		var projectsUsers []struct {
+			User userV1
+		}
+
+		if err := m.db.ProjectsUsers.GetAllToStruct(ctx, &projectsUsers, model.GetAllOptions{
+			Filter: expr.Eq(m.db.ProjectsUsers.FieldExpr("fk_project_id"), expr.Value(r.ProjectId)),
+		}); err != nil {
+			return nil, err
+		}
+
+		project.Users = make([]userV1, len(projectsUsers))
+		for i, pu := range projectsUsers {
+			project.Users[i] = pu.User
+		}
+
+		sort.Slice(project.Users, func(i, j int) bool {
+			return project.Users[i].Fullname < project.Users[j].Fullname
+		})
+	}
 
 	return &project, nil
 }

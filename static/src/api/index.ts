@@ -229,15 +229,23 @@ export interface IdeasOptionsOptionsV1 {
     confident_levels: IdeasOptionsConfidentV1[];
     goals: IdeasOptionsGoalV1[];
     teams: IdeasOptionsTeamV1[];
+    users: IdeasOptionsUserV1[];
 }
 
 export interface IdeasOptionsReqV1 {
     project_id: number;
+    with_users?: boolean;
 }
 
 export interface IdeasOptionsTeamV1 {
     id: number;
     caption: string;
+}
+
+export interface IdeasOptionsUserV1 {
+    fullname: string;
+    email: string;
+    avatar_url: string;
 }
 
 export interface ProjectsAddProjectV1 {

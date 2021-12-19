@@ -1,238 +1,251 @@
 <template>
-  <BContent :loading="loading || optionsLoading" :error="error || optionsError">
-    <MDBCol md="12">
+  <MDBContainer class="mt-3">
+    <MDBBtn color="light" floating size="md" style="margin-bottom: 0.5em;" class="float-end" title="Settings"
+            tag="a" :href="`/projects/${$route.params['id']}/settings`">
+      <MDBIcon icon="cog" iconStyle="fas" size="2x"/>
+    </MDBBtn>
+
+    <h1>
+      {{ options.caption }}
       <MDBBtn outline="primary" rounded size="md" style="margin-bottom: 0.5em;"
               aria-controls="addModal" @click="addForm">
         <MDBIcon icon="plus" iconStyle="fas" class="me-1"/>
         Add an idea
       </MDBBtn>
+    </h1>
 
-      <MDBModal size="lg" id="addModal" tabindex="-1" labelledby="addModalLabel" v-model="addModal">
-        <form @submit.prevent="add" @keypress="formKeyPress">
-          <MDBModalHeader>
-            <MDBModalTitle id="addModalLabel">Adding an idea</MDBModalTitle>
-          </MDBModalHeader>
+    <BContent :loading="loading || optionsLoading" :error="error || optionsError">
+      <MDBCol>
 
-          <MDBModalBody>
-            <MDBCol>
-              <MDBInput label="Caption" required v-model="addData.caption" :disabled="adding"/>
-            </MDBCol>
-            <div class="alert alert-danger mt-3" v-if="addError">{{ addError }}</div>
-          </MDBModalBody>
+        <MDBModal size="lg" id="addModal" tabindex="-1" labelledby="addModalLabel" v-model="addModal">
+          <form @submit.prevent="add" @keypress="formKeyPress">
+            <MDBModalHeader>
+              <MDBModalTitle id="addModalLabel">Adding an idea</MDBModalTitle>
+            </MDBModalHeader>
 
-          <MDBModalFooter>
-            <MDBBtn color="primary" type="submit" :disabled="adding">Add</MDBBtn>
-          </MDBModalFooter>
-        </form>
-      </MDBModal>
+            <MDBModalBody>
+              <MDBCol>
+                <MDBInput label="Caption" required v-model="addData.caption" :disabled="adding"/>
+              </MDBCol>
+              <div class="alert alert-danger mt-3" v-if="addError">{{ addError }}</div>
+            </MDBModalBody>
 
-      <MDBTable striped sm>
-        <thead>
-        <tr>
-          <th>Idea</th>
-          <th>Reach
-            <MDBTooltip v-model="tooltips['reach']" class="ms-1" style="cursor: help" v-if="options.reach_description">
-              <template #reference>
-                <MDBIcon icon="info-circle" iconStyle="fas"/>
+            <MDBModalFooter>
+              <MDBBtn color="primary" type="submit" :disabled="adding">Add</MDBBtn>
+            </MDBModalFooter>
+          </form>
+        </MDBModal>
+
+        <MDBTable striped sm responsive>
+          <thead>
+          <tr>
+            <th>Idea</th>
+            <th class="text-nowrap">
+              Reach
+              <MDBTooltip v-model="tooltips['reach']" class="ms-1" style="cursor: help"
+                          v-if="options.reach_description">
+                <template #reference>
+                  <MDBIcon icon="info-circle" iconStyle="fas"/>
+                </template>
+                <template #tip>
+                  {{ options.reach_description }}
+                </template>
+              </MDBTooltip>
+            </th>
+            <th>Impact</th>
+            <th>Confidence</th>
+            <th class="text-nowrap">
+              Effort
+              <MDBTooltip v-model="tooltips['effort']" class="ms-1" style="cursor: help"
+                          v-if="options.effort_description">
+                <template #reference>
+                  <MDBIcon icon="info-circle" iconStyle="fas"/>
+                </template>
+                <template #tip>
+                  {{ options.effort_description }}
+                </template>
+              </MDBTooltip>
+            </th>
+            <th>Score</th>
+            <th>&ensp;</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr v-for="idea in ideasView" :key="idea.id" :class="{'table-warning': idea.score === undefined}">
+            <th class="position-relative">
+              <BUser :name="idea.owner.fullname" :email="idea.owner.email" :avatar-url="idea.owner.avatar_url"
+                     :hide-name="true" avatar-size="20"/>
+              {{ idea.caption }}
+              <a class="edit-link" @click.prevent="editCaption(idea)">
+                <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
+              </a>
+            </th>
+
+            <td class="position-relative">
+              <template v-if="idea.reach !== undefined">{{ formatNumber(idea.reach, options.reach_format) }}</template>
+              <span class="text-muted" v-else>&mdash;</span>
+              <MDBTooltip v-model="tooltips[`reach${idea.id}`]" class="ms-1" style="cursor: help"
+                          v-if="idea.reach_comment">
+                <template #reference>
+                  <MDBIcon icon="comment" iconStyle="far"/>
+                </template>
+                <template #tip>
+                  {{ idea.reach_comment }}
+                </template>
+              </MDBTooltip>
+
+              <a class="edit-link" @click.prevent="editReach(idea)">
+                <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
+              </a>
+            </td>
+
+            <td class="position-relative text-nowrap">
+              <ul class="list-unstyled mb-0" v-if="filteredGoals(idea).length">
+                <li v-for="goal in filteredGoals(idea)" :key="goal.id">
+                  <MDBBadge color="success" class="ms-1" style="width: 3em">
+                    {{ idea.goals[goal.id].value * 10 / goal.divider }}
+                  </MDBBadge>
+                  {{ goal.caption }}:&nbsp;{{ formatNumber(idea.goals[goal.id].value, goal.format) }}
+                  <MDBTooltip v-model="tooltips[`goal${goal.id}_${idea.id}`]" class="ms-1" style="cursor: help"
+                              v-if="idea.goals[goal.id].comment">
+                    <template #reference>
+                      <MDBIcon icon="comment" iconStyle="far"/>
+                    </template>
+                    <template #tip>
+                      {{ idea.goals[goal.id]?.comment }}
+                    </template>
+                  </MDBTooltip>
+                </li>
+              </ul>
+              <template v-else>
+                &mdash;
               </template>
-              <template #tip>
-                {{ options.reach_description }}
+              <a class="edit-link" @click.prevent="editGoals(idea)">
+                <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
+              </a>
+            </td>
+
+            <td class="position-relative">
+              <template v-if="idea.confident !== undefined">
+                <MDBBadge color="secondary" pill>{{ confidentLevelsMap[idea.confident].weight }}</MDBBadge>
+                {{ confidentLevelsMap[idea.confident].caption }}
               </template>
-            </MDBTooltip>
-          </th>
-          <th>Impact</th>
-          <th>Confidence</th>
-          <th>Effort
-            <MDBTooltip v-model="tooltips['effort']" class="ms-1" style="cursor: help"
-                        v-if="options.effort_description">
-              <template #reference>
-                <MDBIcon icon="info-circle" iconStyle="fas"/>
+              <span class="text-muted" v-else>&mdash;</span>
+              <MDBTooltip v-model="tooltips[`confident${idea.id}`]" class="ms-1" style="cursor: help"
+                          v-if="idea.confident_comment">
+                <template #reference>
+                  <MDBIcon icon="comment" iconStyle="far"/>
+                </template>
+                <template #tip>
+                  {{ idea.confident_comment }}
+                </template>
+              </MDBTooltip>
+
+              <a class="edit-link" @click.prevent="editConfident(idea)">
+                <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
+              </a>
+            </td>
+
+            <td class="position-relative text-nowrap">
+              <ul class="list-unstyled mb-0" v-if="filteredTeams(idea).length">
+                <li v-for="team in filteredTeams(idea)" :key="team.id">{{ team.caption }}:&nbsp;
+                  {{ idea.teams[team.id].capacity }}
+                  <MDBTooltip v-model="tooltips[`team${team.id}_${idea.id}`]" class="ms-1" style="cursor: help"
+                              v-if="idea.teams[team.id]?.comment">
+                    <template #reference>
+                      <MDBIcon icon="comment" iconStyle="far"/>
+                    </template>
+                    <template #tip>
+                      {{ idea.teams[team.id]?.comment }}
+                    </template>
+                  </MDBTooltip>
+                </li>
+              </ul>
+              <template v-else>
+                &mdash;
               </template>
-              <template #tip>
-                {{ options.effort_description }}
+              <a class="edit-link" @click.prevent="editEffort(idea)">
+                <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
+              </a>
+            </td>
+
+            <th>
+              <template v-if="idea.score === undefined">
+                &mdash;
               </template>
-            </MDBTooltip>
-          </th>
-          <th>Score</th>
-          <th>&ensp;</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        <tr v-for="idea in ideasView" :key="idea.id" :class="{'table-warning': idea.score === undefined}">
-          <th class="position-relative">
-            <BUser :name="idea.owner.fullname" :email="idea.owner.email" :avatar-url="idea.owner.avatar_url"
-                   :hide-name="true" avatar-size="20"/>
-            {{ idea.caption }}
-            <a class="edit-link" @click.prevent="editCaption(idea)">
-              <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
-            </a>
-          </th>
-
-          <td class="position-relative">
-            <template v-if="idea.reach !== undefined">{{ formatNumber(idea.reach, options.reach_format) }}</template>
-            <span class="text-muted" v-else>&mdash;</span>
-            <MDBTooltip v-model="tooltips[`reach${idea.id}`]" class="ms-1" style="cursor: help"
-                        v-if="idea.reach_comment">
-              <template #reference>
-                <MDBIcon icon="comment" iconStyle="far"/>
+              <template v-else>
+                {{ $filters.formatFloat(idea.score) }}
               </template>
-              <template #tip>
-                {{ idea.reach_comment }}
-              </template>
-            </MDBTooltip>
+            </th>
 
-            <a class="edit-link" @click.prevent="editReach(idea)">
-              <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
-            </a>
-          </td>
+            <td>
+              <a class="action-link link-danger" @click.prevent="showDeleteDialog(idea)">
+                <MDBIcon icon="trash" iconStyle="fas"/>
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </MDBTable>
+      </MDBCol>
+    </BContent>
 
-          <td class="position-relative text-nowrap">
-            <ul class="list-unstyled mb-0" v-if="filteredGoals(idea).length">
-              <li v-for="goal in filteredGoals(idea)" :key="goal.id">
-                <MDBBadge color="success" class="ms-1" style="width: 3em">
-                  {{ idea.goals[goal.id].value * 10 / goal.divider }}
-                </MDBBadge>
-                {{ goal.caption }}:&nbsp;{{ formatNumber(idea.goals[goal.id].value, goal.format) }}
-                <MDBTooltip v-model="tooltips[`goal${goal.id}_${idea.id}`]" class="ms-1" style="cursor: help"
-                            v-if="idea.goals[goal.id].comment">
-                  <template #reference>
-                    <MDBIcon icon="comment" iconStyle="far"/>
-                  </template>
-                  <template #tip>
-                    {{ idea.goals[goal.id]?.comment }}
-                  </template>
-                </MDBTooltip>
-              </li>
-            </ul>
-            <template v-else>
-              &mdash;
-            </template>
-            <a class="edit-link" @click.prevent="editGoals(idea)">
-              <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
-            </a>
-          </td>
+    <BIdeaEditModal caption="Editing the idea caption" id="captionEdit" v-model="editCaptionShow" :on-save="load"
+                    :data="editCaptionData">
+      <MDBInput label="Caption" required v-model="editCaptionData.caption"/>
+    </BIdeaEditModal>
 
-          <td class="position-relative">
-            <template v-if="idea.confident !== undefined">
-              <MDBBadge color="secondary" pill>{{ confidentLevelsMap[idea.confident].weight }}</MDBBadge>
-              {{ confidentLevelsMap[idea.confident].caption }}
-            </template>
-            <span class="text-muted" v-else>&mdash;</span>
-            <MDBTooltip v-model="tooltips[`confident${idea.id}`]" class="ms-1" style="cursor: help"
-                        v-if="idea.confident_comment">
-              <template #reference>
-                <MDBIcon icon="comment" iconStyle="far"/>
-              </template>
-              <template #tip>
-                {{ idea.confident_comment }}
-              </template>
-            </MDBTooltip>
+    <BIdeaEditModal caption="Editing the idea reach" id="reachEdit" v-model="editReachShow" :on-save="load"
+                    :data="editReachData">
+      <div class="alert alert-info show" v-if="options.reach_description">
+        <MDBIcon icon="info-circle" iconStyle="fas" class="me-1"/>
+        {{ options.reach_description }}
+      </div>
+      <MDBInput label="Reach" class="active" type="number" required v-model.number="editReachData.reach"/>
+      <MDBTextarea label="Comment" class="mt-3" v-model="editReachData.reach_comment"/>
+    </BIdeaEditModal>
 
-            <a class="edit-link" @click.prevent="editConfident(idea)">
-              <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
-            </a>
-          </td>
+    <BIdeaEditModal caption="Editing the idea goals" v-model="editGoalShow" :on-save="load"
+                    :data="editGoalsData">
+      <template v-for="goal in options.goals" :key="goal.id">
+        <MDBInput :label="goal.caption" class="active" type="number" step="any" required
+                  v-model.number="editGoalsData.goals[goal.id]"/>
+        <MDBTextarea label="Comment" class="mt-1 mb-3" rows="2" v-model="editGoalsData.goals_comments[goal.id]"/>
+      </template>
+    </BIdeaEditModal>
 
-          <td class="position-relative text-nowrap">
-            <ul class="list-unstyled mb-0" v-if="filteredTeams(idea).length">
-              <li v-for="team in filteredTeams(idea)" :key="team.id">{{ team.caption }}:&nbsp;
-                {{ idea.teams[team.id].capacity }}
-                <MDBTooltip v-model="tooltips[`team${team.id}_${idea.id}`]" class="ms-1" style="cursor: help"
-                            v-if="idea.teams[team.id]?.comment">
-                  <template #reference>
-                    <MDBIcon icon="comment" iconStyle="far"/>
-                  </template>
-                  <template #tip>
-                    {{ idea.teams[team.id]?.comment }}
-                  </template>
-                </MDBTooltip>
-              </li>
-            </ul>
-            <template v-else>
-              &mdash;
-            </template>
-            <a class="edit-link" @click.prevent="editEffort(idea)">
-              <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
-            </a>
-          </td>
+    <BIdeaEditModal caption="Editing the idea confident" v-model="editConfidentShow" :on-save="load"
+                    :data="editConfidentData">
+      <div class="form-outline">
+        <select class="form-control active" style="border: #bdbdbd solid thin" id="confident_select"
+                v-model="editConfidentData.confident">
+          <option v-for="cl in options.confident_levels" :key="cl.id" :value="cl.id">
+            {{ cl.caption }}&nbsp;({{ cl.weight }})
+          </option>
+        </select>
+        <label class="form-label bg-white ps-1 pe-1" for="confident_select">Confidence</label>
+      </div>
+      <MDBTextarea label="Comment" class="mt-3" v-model="editConfidentData.confident_comment"/>
+    </BIdeaEditModal>
 
-          <th>
-            <template v-if="idea.score === undefined">
-              &mdash;
-            </template>
-            <template v-else>
-              {{ $filters.formatFloat(idea.score) }}
-            </template>
-          </th>
+    <BIdeaEditModal caption="Editing the idea effort" v-model="editEffortShow" :on-save="load"
+                    :data="editEffortData">
+      <div class="alert alert-info show" v-if="options.effort_description">
+        <MDBIcon icon="info-circle" iconStyle="fas" class="me-1"/>
+        {{ options.effort_description }}
+      </div>
+      <template v-for="team in options.teams" :key="team.id">
+        <MDBInput :label="team.caption" class="active" type="number" required
+                  v-model.number="editEffortData.teams[team.id]"/>
+        <MDBTextarea label="Comment" class="mt-1 mb-3" rows="2" v-model="editEffortData.teams_comments[team.id]"/>
+      </template>
+    </BIdeaEditModal>
 
-          <td>
-            <a class="action-link link-danger" @click.prevent="showDeleteDialog(idea)">
-              <MDBIcon icon="trash" iconStyle="fas"/>
-            </a>
-          </td>
-        </tr>
-        </tbody>
-      </MDBTable>
-    </MDBCol>
-  </BContent>
-
-  <BIdeaEditModal caption="Editing the idea caption" id="captionEdit" v-model="editCaptionShow" :on-save="load"
-                  :data="editCaptionData">
-    <MDBInput label="Caption" required v-model="editCaptionData.caption"/>
-  </BIdeaEditModal>
-
-  <BIdeaEditModal caption="Editing the idea reach" id="reachEdit" v-model="editReachShow" :on-save="load"
-                  :data="editReachData">
-    <div class="alert alert-info show" v-if="options.reach_description">
-      <MDBIcon icon="info-circle" iconStyle="fas" class="me-1"/>
-      {{ options.reach_description }}
-    </div>
-    <MDBInput label="Reach" class="active" type="number" required v-model.number="editReachData.reach"/>
-    <MDBTextarea label="Comment" class="mt-3" v-model="editReachData.reach_comment"/>
-  </BIdeaEditModal>
-
-  <BIdeaEditModal caption="Editing the idea goals" v-model="editGoalShow" :on-save="load"
-                  :data="editGoalsData">
-    <template v-for="goal in options.goals" :key="goal.id">
-      <MDBInput :label="goal.caption" class="active" type="number" step="any" required
-                v-model.number="editGoalsData.goals[goal.id]"/>
-      <MDBTextarea label="Comment" class="mt-1 mb-3" rows="2" v-model="editGoalsData.goals_comments[goal.id]"/>
-    </template>
-  </BIdeaEditModal>
-
-  <BIdeaEditModal caption="Editing the idea confident" v-model="editConfidentShow" :on-save="load"
-                  :data="editConfidentData">
-    <div class="form-outline">
-      <select class="form-control active" style="border: #bdbdbd solid thin" id="confident_select"
-              v-model="editConfidentData.confident">
-        <option v-for="cl in options.confident_levels" :key="cl.id" :value="cl.id">
-          {{ cl.caption }}&nbsp;({{ cl.weight }})
-        </option>
-      </select>
-      <label class="form-label bg-white ps-1 pe-1" for="confident_select">Confidence</label>
-    </div>
-    <MDBTextarea label="Comment" class="mt-3" v-model="editConfidentData.confident_comment"/>
-  </BIdeaEditModal>
-
-  <BIdeaEditModal caption="Editing the idea effort" v-model="editEffortShow" :on-save="load"
-                  :data="editEffortData">
-    <div class="alert alert-info show" v-if="options.effort_description">
-      <MDBIcon icon="info-circle" iconStyle="fas" class="me-1"/>
-      {{ options.effort_description }}
-    </div>
-    <template v-for="team in options.teams" :key="team.id">
-      <MDBInput :label="team.caption" class="active" type="number" required
-                v-model.number="editEffortData.teams[team.id]"/>
-      <MDBTextarea label="Comment" class="mt-1 mb-3" rows="2" v-model="editEffortData.teams_comments[team.id]"/>
-    </template>
-  </BIdeaEditModal>
-
-  <BConfirmModal v-model="deleteConfirmShow" yes-btn="Yes" no-btn="Cancel" :callback="deleteIdea">
-    <p class="font-weight-bold">Are you sure to delete the idea "{{ deleteIdeaCur.caption }}"?</p>
-    <p>The operation cannot be undone!</p>
-  </BConfirmModal>
-
+    <BConfirmModal v-model="deleteConfirmShow" yes-btn="Yes" no-btn="Cancel" :callback="deleteIdea">
+      <p class="font-weight-bold">Are you sure to delete the idea "{{ deleteIdeaCur.caption }}"?</p>
+      <p>The operation cannot be undone!</p>
+    </BConfirmModal>
+  </MDBContainer>
 </template>
 
 <script lang="ts">
@@ -241,6 +254,7 @@ import {
   MDBBadge,
   MDBBtn,
   MDBCol,
+  MDBContainer,
   MDBIcon,
   MDBInput,
   MDBModal,
@@ -278,13 +292,14 @@ export default defineComponent({
     MDBBadge,
     MDBBtn,
     MDBCol,
+    MDBContainer,
     MDBIcon,
     MDBInput,
     MDBModal,
-    MDBModalHeader,
-    MDBModalTitle,
     MDBModalBody,
     MDBModalFooter,
+    MDBModalHeader,
+    MDBModalTitle,
     MDBTable,
     MDBTextarea,
     MDBTooltip
@@ -533,8 +548,10 @@ export default defineComponent({
       this.deleteConfirmShow = true
     },
 
+    // eslint-disable-next-line
     deleteIdea(): Promise<any> {
       return api.IdeasDeleteV1({id: this.deleteIdeaCur.id}).then(v => {
+        // eslint-disable-next-line
         return new Promise<any>((resolve) => {
           this.load()
           resolve(v)
