@@ -15,7 +15,10 @@ import (
 type reqV1 struct {
 	Id               uint32              `json:"id"`
 	Caption          *string             `json:"caption"`
+	Comment          *string             `json:"comment"`
 	Link             *string             `json:"link"`
+	ReadyForDev      *bool               `json:"ready_for_dev"`
+	MakeMeOwner      *bool               `json:"make_me_owner"`
 	Reach            *uint64             `json:"reach"`
 	ReachComment     *string             `json:"reach_comment"`
 	Confident        *uint32             `json:"confident"`
@@ -55,8 +58,17 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*struct{}, error) {
 		if r.Caption != nil {
 			ideaFields["caption"] = *r.Caption
 		}
+		if r.Comment != nil {
+			ideaFields["comment"] = *r.Comment
+		}
 		if r.Link != nil {
 			ideaFields["link"] = *r.Link
+		}
+		if r.ReadyForDev != nil {
+			ideaFields["ready_for_dev"] = *r.ReadyForDev
+		}
+		if r.MakeMeOwner != nil && *r.MakeMeOwner {
+			ideaFields["fk_owner_id"] = curUserId
 		}
 		if r.Reach != nil {
 			ideaFields["reach"] = *r.Reach

@@ -17,6 +17,8 @@ type reqV1 struct {
 type ideaV1 struct {
 	Id               uint32       `json:"id"`
 	Caption          string       `json:"caption"`
+	Comment          *string      `json:"comment,omitempty"`
+	ReadyForDev      bool         `json:"ready_for_dev"`
 	Reach            *uint64      `json:"reach,omitempty"`
 	ReachComment     *string      `json:"reach_comment,omitempty"`
 	Link             *string      `json:"link,omitempty"`

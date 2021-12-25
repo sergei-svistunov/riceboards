@@ -28,6 +28,10 @@ func New(db *mysql.MySQL) *Table {
 					NotNull: true,
 				},
 
+				&mysql.TextField{
+					Id: "comment",
+				},
+
 				&mysql.BooleanField{
 					Id:      "ready_for_dev",
 					NotNull: true,

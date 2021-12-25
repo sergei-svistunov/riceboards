@@ -12,13 +12,13 @@ import (
 )
 
 type reqV1 struct {
-	ProjectId uint32 `json:"project_id"`
-	Caption   string `json:"caption"`
+	ProjectId uint32  `json:"project_id"`
+	Caption   string  `json:"caption"`
+	Comment   *string `json:"comment"`
 }
 
 type ideaV1 struct {
-	Id      uint32 `json:"id"`
-	Caption string `json:"caption"`
+	Id uint32 `json:"id"`
 }
 
 var errorsV1 struct {
@@ -48,9 +48,10 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*ideaV1, error) {
 		FkOwnerId   uint32
 		FkProjectId uint32
 		Caption     string
+		Comment     *string
 		ReadyForDev bool
 	}{
-		{curUserId, r.ProjectId, r.Caption, false},
+		{curUserId, r.ProjectId, r.Caption, r.Comment, false},
 	}, model.AddOptions{})
 	if err != nil {
 		if db.IsDuplicateEntryErr(err) {
@@ -61,7 +62,6 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*ideaV1, error) {
 	}
 
 	return &ideaV1{
-		Id:      pks.Data()[0][0].(uint32),
-		Caption: r.Caption,
+		Id: pks.Data()[0][0].(uint32),
 	}, nil
 }

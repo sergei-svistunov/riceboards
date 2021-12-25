@@ -146,12 +146,12 @@ export interface AuthMeUserV1 {
 
 export interface IdeasAddIdeaV1 {
     id: number;
-    caption: string;
 }
 
 export interface IdeasAddReqV1 {
     project_id: number;
     caption: string;
+    comment?: string;
 }
 
 export interface IdeasDeleteReqV1 {
@@ -161,7 +161,10 @@ export interface IdeasDeleteReqV1 {
 export interface IdeasEditReqV1 {
     id: number;
     caption?: string;
+    comment?: string;
     link?: string;
+    ready_for_dev?: boolean;
+    make_me_owner?: boolean;
     reach?: number;
     reach_comment?: string;
     confident?: number;
@@ -187,6 +190,8 @@ export interface IdeasListIdeaTeamV1 {
 export interface IdeasListIdeaV1 {
     id: number;
     caption: string;
+    comment?: string;
+    ready_for_dev: boolean;
     reach?: number;
     reach_comment?: string;
     link?: string;

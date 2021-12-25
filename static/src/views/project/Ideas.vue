@@ -77,7 +77,23 @@
               <BUser :name="idea.owner.fullname" :email="idea.owner.email" :avatar-url="idea.owner.avatar_url"
                      :hide-name="true" avatar-size="20"/>
               {{ idea.caption }}
-              <a class="edit-link" @click.prevent="editCaption(idea)">
+              <MDBTooltip v-model="tooltips[`comment${idea.id}`]" class="ms-1" style="cursor: help"
+                          v-if="idea.comment">
+                <template #reference>
+                  <MDBIcon icon="comment" iconStyle="far"/>
+                </template>
+                <template #tip>
+                  {{ idea.comment }}
+                </template>
+              </MDBTooltip>
+              <div class="position-absolute text-end w-100 pe-3" style="bottom: 0; left: 0; right: 0">
+                <a :href="idea.link" v-if="idea.link" target="_blank" class="ms-2">
+                  <MDBIcon icon="external-link-alt" iconStyle="fas"/>
+                </a>
+                <MDBIcon icon="dev" iconStyle="fab" v-if="idea.ready_for_dev" title="Ready for development"
+                         class="ms-2"/>
+              </div>
+              <a class="edit-link" @click.prevent="editIdea(idea)">
                 <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
               </a>
             </th>
@@ -190,9 +206,14 @@
       </MDBCol>
     </BContent>
 
-    <BIdeaEditModal caption="Editing the idea caption" id="captionEdit" v-model="editCaptionShow" :on-save="load"
-                    :data="editCaptionData">
-      <MDBInput label="Caption" required v-model="editCaptionData.caption"/>
+    <BIdeaEditModal caption="Editing the idea" id="ideaEdit" v-model="editIdeaShow" :on-save="load"
+                    :data="editIdeaData">
+      <MDBInput label="Caption" required v-model="editIdeaData.caption" maxLength="255"/>
+      <MDBTextarea label="Comment" class="mt-3" v-model="editIdeaData.comment"/>
+      <MDBInput label="Link" class="mt-3" v-model="editIdeaData.link" maxLength="255"/>
+      <MDBSwitch label="Ready for dev" wrapper-class="mt-3" v-model="editIdeaData.ready_for_dev"/>
+      <MDBSwitch label="Make me the idea owner" wrapper-class="mt-3" v-model="editIdeaData.make_me_owner"
+                 v-if="!editIdeaOwner"/>
     </BIdeaEditModal>
 
     <BIdeaEditModal caption="Editing the idea reach" id="reachEdit" v-model="editReachShow" :on-save="load"
@@ -262,6 +283,7 @@ import {
   MDBModalFooter,
   MDBModalHeader,
   MDBModalTitle,
+  MDBSwitch,
   MDBTable,
   MDBTextarea,
   MDBTooltip
@@ -300,6 +322,7 @@ export default defineComponent({
     MDBModalFooter,
     MDBModalHeader,
     MDBModalTitle,
+    MDBSwitch,
     MDBTable,
     MDBTextarea,
     MDBTooltip
@@ -333,6 +356,9 @@ export default defineComponent({
         return {
           id: idea.id,
           caption: idea.caption,
+          comment: idea.comment,
+          ready_for_dev: idea.ready_for_dev,
+          link: idea.link,
           reach: idea.reach,
           reach_comment: idea.reach_comment,
           confident: idea.confident,
@@ -372,10 +398,15 @@ export default defineComponent({
       adding: false,
       addError: '',
 
-      editCaptionShow: false,
-      editCaptionData: {
+      editIdeaShow: false,
+      editIdeaOwner: false,
+      editIdeaData: {
         id: 0,
-        caption: ''
+        caption: '',
+        comment: '',
+        link: '',
+        ready_for_dev: false,
+        make_me_owner: false,
       },
 
       editReachShow: false,
@@ -487,12 +518,17 @@ export default defineComponent({
       })
     },
 
-    editCaption(idea: ideaView) {
-      this.editCaptionData = {
+    editIdea(idea: ideaView) {
+      this.editIdeaData = {
         id: idea.id,
         caption: idea.caption,
+        comment: idea.comment || '',
+        link: idea.link || '',
+        ready_for_dev: idea.ready_for_dev,
+        make_me_owner: false
       }
-      this.editCaptionShow = true
+      this.editIdeaShow = true
+      this.editIdeaOwner = this.$store.state.user.email == idea.owner.email
     },
 
     editReach(idea: ideaView) {
@@ -572,6 +608,9 @@ export default defineComponent({
 interface ideaView {
   id: number
   caption: string
+  comment?: string
+  ready_for_dev: boolean
+  link?: string
   reach?: number
   reach_comment?: string
   confident?: number
