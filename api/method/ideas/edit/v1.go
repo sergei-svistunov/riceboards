@@ -118,6 +118,11 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*struct{}, error) {
 		}
 
 		if r.Teams != nil && len(*r.Teams) > 0 {
+			ideaTeams, err := m.getTeamsCapacity(ctx, r.Id)
+			if err != nil {
+				return err
+			}
+
 			type team struct {
 				FkOwnerId uint32
 				FkIdeaId  uint32
@@ -127,6 +132,10 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*struct{}, error) {
 			}
 			var teams []team
 			for id, value := range *r.Teams {
+				if team, exists := ideaTeams[id]; exists && team.Capacity == value && (r.TeamsComments == nil || eqNullStr((*r.TeamsComments)[id], ideaTeams[id].Comment)) {
+					continue
+				}
+
 				teams = append(teams, team{
 					FkOwnerId: curUserId,
 					FkIdeaId:  r.Id,
@@ -140,8 +149,10 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*struct{}, error) {
 				}
 			}
 
-			if _, err := m.db.IdeaTeams.AddFromStructs(ctx, teams, model.AddOptions{Replace: true}); err != nil {
-				return err
+			if len(teams) > 0 {
+				if _, err := m.db.IdeaTeams.AddFromStructs(ctx, teams, model.AddOptions{Replace: true}); err != nil {
+					return err
+				}
 			}
 		}
 
@@ -151,4 +162,32 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*struct{}, error) {
 	}
 
 	return &struct{}{}, nil
+}
+
+type ideaTeam struct {
+	FkTeamId uint32
+	Capacity float64
+	Comment  *string
+}
+
+func (m *Method) getTeamsCapacity(ctx context.Context, ideaId uint32) (map[uint32]ideaTeam, error) {
+	var teams []ideaTeam
+
+	if err := m.db.IdeaTeams.GetAllToStruct(ctx, &teams, model.GetAllOptions{
+		Filter:    expr.Eq(m.db.IdeaTeams.FieldExpr("fk_idea_id"), expr.Value(ideaId)),
+		ForUpdate: true,
+	}); err != nil {
+		return nil, err
+	}
+
+	res := map[uint32]ideaTeam{}
+	for _, team := range teams {
+		res[team.FkTeamId] = team
+	}
+
+	return res, nil
+}
+
+func eqNullStr(s1 string, s2 *string) bool {
+	return s2 == nil || s2 != nil && s1 == *s2
 }

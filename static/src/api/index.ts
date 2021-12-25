@@ -179,12 +179,14 @@ export interface IdeasListIdeaGoalV1 {
     id: number;
     value: number;
     comment?: string;
+    owner: IdeasListUserV1;
 }
 
 export interface IdeasListIdeaTeamV1 {
     id: number;
     capacity: number;
     comment?: string;
+    owner: IdeasListUserV1;
 }
 
 export interface IdeasListIdeaV1 {

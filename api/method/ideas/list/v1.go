@@ -33,12 +33,14 @@ type IdeaGoalV1 struct {
 	Id      uint32  `json:"id" field:"fk_goal_id"`
 	Value   float64 `json:"value"`
 	Comment *string `json:"comment"`
+	Owner   UserV1  `json:"owner"`
 }
 
 type IdeaTeamV1 struct {
 	Id       uint32  `json:"id" field:"fk_team_id"`
 	Capacity float64 `json:"capacity"`
 	Comment  *string `json:"comment"`
+	Owner    UserV1  `json:"owner"`
 }
 
 type UserV1 struct {

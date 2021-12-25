@@ -119,6 +119,8 @@
             <td class="position-relative text-nowrap">
               <ul class="list-unstyled mb-0" v-if="filteredGoals(idea).length">
                 <li v-for="goal in filteredGoals(idea)" :key="goal.id">
+                  <!--                  <BUser :email="idea.goals[goal.id].owner.email" :name="idea.goals[goal.id].owner.fullname"
+                                           :avatar-url="idea.goals[goal.id].owner.avatar_url" hide-name avatar-size="20"/>-->
                   <MDBBadge color="success" class="ms-1" style="width: 3em">
                     {{ idea.goals[goal.id].value * 10 / goal.divider }}
                   </MDBBadge>
@@ -165,8 +167,10 @@
 
             <td class="position-relative text-nowrap">
               <ul class="list-unstyled mb-0" v-if="filteredTeams(idea).length">
-                <li v-for="team in filteredTeams(idea)" :key="team.id">{{ team.caption }}:&nbsp;
-                  {{ idea.teams[team.id].capacity }}
+                <li v-for="team in filteredTeams(idea)" :key="team.id">
+                  <BUser :email="idea.teams[team.id].owner.email" :name="idea.teams[team.id].owner.fullname"
+                         :avatar-url="idea.teams[team.id].owner.avatar_url" hide-name avatar-size="16"/>
+                  <span class="ms-2">{{ team.caption }}:&nbsp;{{ idea.teams[team.id].capacity }}</span>
                   <MDBTooltip v-model="tooltips[`team${team.id}_${idea.id}`]" class="ms-1" style="cursor: help"
                               v-if="idea.teams[team.id]?.comment">
                     <template #reference>
@@ -229,7 +233,7 @@
     <BIdeaEditModal caption="Editing the idea goals" v-model="editGoalShow" :on-save="load"
                     :data="editGoalsData">
       <template v-for="goal in options.goals" :key="goal.id">
-        <MDBInput :label="goal.caption" class="active" type="number" step="any" required
+        <MDBInput :label="goal.caption" class="active" type="number" step="any"
                   v-model.number="editGoalsData.goals[goal.id]"/>
         <MDBTextarea label="Comment" class="mt-1 mb-3" rows="2" v-model="editGoalsData.goals_comments[goal.id]"/>
       </template>
@@ -256,7 +260,7 @@
         {{ options.effort_description }}
       </div>
       <template v-for="team in options.teams" :key="team.id">
-        <MDBInput :label="team.caption" class="active" type="number" required
+        <MDBInput :label="team.caption" class="active" type="number"
                   v-model.number="editEffortData.teams[team.id]"/>
         <MDBTextarea label="Comment" class="mt-1 mb-3" rows="2" v-model="editEffortData.teams_comments[team.id]"/>
       </template>
@@ -487,13 +491,13 @@ export default defineComponent({
 
     filteredGoals(idea: ideaView): IdeasOptionsGoalV1[] {
       return this.options.goals.filter(v => {
-        return idea.goals[v.id]?.value
+        return idea.goals[v.id]?.value || idea.goals[v.id]?.comment
       })
     },
 
     filteredTeams(idea: ideaView): IdeasOptionsTeamV1[] {
       return this.options.teams.filter(v => {
-        return idea.teams[v.id]?.capacity
+        return idea.teams[v.id]?.capacity || idea.teams[v.id]?.comment
       })
     },
 
