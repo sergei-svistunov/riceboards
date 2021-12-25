@@ -462,7 +462,7 @@ export default defineComponent({
 
     filteredTeams(idea: ideaView): IdeasOptionsTeamV1[] {
       return this.options.teams.filter(v => {
-        return idea.teams[v.id]
+        return idea.teams[v.id]?.capacity
       })
     },
 
