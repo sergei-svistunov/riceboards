@@ -39,6 +39,7 @@
         <MDBTable striped sm responsive>
           <thead>
           <tr>
+            <th>Priority</th>
             <th>Idea</th>
             <th class="text-nowrap">
               Reach
@@ -72,7 +73,8 @@
           </thead>
 
           <tbody>
-          <tr v-for="idea in ideasView" :key="idea.id" :class="{'table-warning': idea.score === undefined}">
+          <tr v-for="(idea, i) in ideasView" :key="idea.id" :class="{'table-warning': idea.score === undefined}">
+            <th>{{ i + 1 }}</th>
             <th class="position-relative">
               <BUser :name="idea.owner.fullname" :email="idea.owner.email" :avatar-url="idea.owner.avatar_url"
                      :hide-name="true" avatar-size="20"/>
