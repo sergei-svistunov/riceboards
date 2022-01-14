@@ -16,7 +16,6 @@
 
     <BContent :loading="loading || optionsLoading" :error="error || optionsError">
       <MDBCol>
-
         <MDBModal size="lg" id="addModal" tabindex="-1" labelledby="addModalLabel" v-model="addModal">
           <form @submit.prevent="add" @keypress="formKeyPress">
             <MDBModalHeader>
@@ -36,36 +35,21 @@
           </form>
         </MDBModal>
 
-        <MDBTable striped sm responsive>
+        <MDBTable striped sm responsive class="ideas-tbl">
           <thead>
           <tr>
             <th>Priority</th>
             <th>Idea</th>
+            <th></th>
             <th class="text-nowrap">
               Reach
-              <MDBTooltip v-model="tooltips['reach']" class="ms-1" style="cursor: help"
-                          v-if="options.reach_description">
-                <template #reference>
-                  <MDBIcon icon="info-circle" iconStyle="fas"/>
-                </template>
-                <template #tip>
-                  {{ options.reach_description }}
-                </template>
-              </MDBTooltip>
+              <BComment class="ms-1" :text="options.reach_description" v-if="options.reach_description"/>
             </th>
             <th>Impact</th>
             <th>Confidence</th>
             <th class="text-nowrap">
               Effort
-              <MDBTooltip v-model="tooltips['effort']" class="ms-1" style="cursor: help"
-                          v-if="options.effort_description">
-                <template #reference>
-                  <MDBIcon icon="info-circle" iconStyle="fas"/>
-                </template>
-                <template #tip>
-                  {{ options.effort_description }}
-                </template>
-              </MDBTooltip>
+              <BComment class="ms-1" :text="options.effort_description" v-if="options.effort_description"/>
             </th>
             <th>Score</th>
             <th>&ensp;</th>
@@ -79,39 +63,24 @@
               <BUser :name="idea.owner.fullname" :email="idea.owner.email" :avatar-url="idea.owner.avatar_url"
                      :hide-name="true" avatar-size="20"/>
               {{ idea.caption }}
-              <MDBTooltip v-model="tooltips[`comment${idea.id}`]" class="ms-1" style="cursor: help"
-                          v-if="idea.comment">
-                <template #reference>
-                  <MDBIcon icon="comment" iconStyle="far"/>
-                </template>
-                <template #tip>
-                  {{ idea.comment }}
-                </template>
-              </MDBTooltip>
-              <div class="position-absolute text-end w-100 pe-3" style="bottom: 0; left: 0; right: 0">
-                <a :href="idea.link" v-if="idea.link" target="_blank" class="ms-2">
-                  <MDBIcon icon="external-link-alt" iconStyle="fas"/>
-                </a>
-                <MDBIcon icon="dev" iconStyle="fab" v-if="idea.ready_for_dev" title="Ready for development"
-                         class="ms-2"/>
-              </div>
+              <BComment class="ms-1" :text="idea.comment" v-if="idea.comment"/>
               <a class="edit-link" @click.prevent="editIdea(idea)">
                 <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
               </a>
             </th>
 
             <td class="position-relative">
+              <a :href="idea.link" v-if="idea.link" target="_blank" class="ms-2">
+                <MDBIcon icon="external-link-alt" iconStyle="fas"/>
+              </a>
+              <MDBIcon icon="dev" iconStyle="fab" v-if="idea.ready_for_dev" title="Ready for development"
+                       class="ms-2"/>
+            </td>
+
+            <td class="position-relative">
               <template v-if="idea.reach !== undefined">{{ formatNumber(idea.reach, options.reach_format) }}</template>
               <span class="text-muted" v-else>&mdash;</span>
-              <MDBTooltip v-model="tooltips[`reach${idea.id}`]" class="ms-1" style="cursor: help"
-                          v-if="idea.reach_comment">
-                <template #reference>
-                  <MDBIcon icon="comment" iconStyle="far"/>
-                </template>
-                <template #tip>
-                  {{ idea.reach_comment }}
-                </template>
-              </MDBTooltip>
+              <BComment class="ms-1" :text="idea.reach_comment" v-if="idea.reach_comment"/>
 
               <a class="edit-link" @click.prevent="editReach(idea)">
                 <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
@@ -127,15 +96,7 @@
                     {{ idea.goals[goal.id].value * 10 / goal.divider }}
                   </MDBBadge>
                   {{ goal.caption }}:&nbsp;{{ formatNumber(idea.goals[goal.id].value, goal.format) }}
-                  <MDBTooltip v-model="tooltips[`goal${goal.id}_${idea.id}`]" class="ms-1" style="cursor: help"
-                              v-if="idea.goals[goal.id].comment">
-                    <template #reference>
-                      <MDBIcon icon="comment" iconStyle="far"/>
-                    </template>
-                    <template #tip>
-                      {{ idea.goals[goal.id]?.comment }}
-                    </template>
-                  </MDBTooltip>
+                  <BComment class="ms-1" :text="idea.goals[goal.id]?.comment" v-if="idea.goals[goal.id]?.comment"/>
                 </li>
               </ul>
               <template v-else>
@@ -152,15 +113,7 @@
                 {{ confidentLevelsMap[idea.confident].caption }}
               </template>
               <span class="text-muted" v-else>&mdash;</span>
-              <MDBTooltip v-model="tooltips[`confident${idea.id}`]" class="ms-1" style="cursor: help"
-                          v-if="idea.confident_comment">
-                <template #reference>
-                  <MDBIcon icon="comment" iconStyle="far"/>
-                </template>
-                <template #tip>
-                  {{ idea.confident_comment }}
-                </template>
-              </MDBTooltip>
+              <BComment class="ms-1" :text="idea.confident_comment" v-if="idea.confident_comment"/>
 
               <a class="edit-link" @click.prevent="editConfident(idea)">
                 <MDBIcon icon="edit" iconStyle="far" class="edit-icon"/>
@@ -173,15 +126,7 @@
                   <BUser :email="idea.teams[team.id].owner.email" :name="idea.teams[team.id].owner.fullname"
                          :avatar-url="idea.teams[team.id].owner.avatar_url" hide-name avatar-size="16"/>
                   <span class="ms-2">{{ team.caption }}:&nbsp;{{ idea.teams[team.id].capacity }}</span>
-                  <MDBTooltip v-model="tooltips[`team${team.id}_${idea.id}`]" class="ms-1" style="cursor: help"
-                              v-if="idea.teams[team.id]?.comment">
-                    <template #reference>
-                      <MDBIcon icon="comment" iconStyle="far"/>
-                    </template>
-                    <template #tip>
-                      {{ idea.teams[team.id]?.comment }}
-                    </template>
-                  </MDBTooltip>
+                  <BComment class="ms-1" :text="idea.teams[team.id]?.comment" v-if="idea.teams[team.id]?.comment"/>
                 </li>
               </ul>
               <template v-else>
@@ -291,8 +236,7 @@ import {
   MDBModalTitle,
   MDBSwitch,
   MDBTable,
-  MDBTextarea,
-  MDBTooltip
+  MDBTextarea
 } from "mdb-vue-ui-kit";
 import api, {
   IdeasListIdeaGoalV1,
@@ -309,10 +253,12 @@ import BIdeaEditModal from "@/components/BIdeaEditModal.vue";
 import filters from "@/filters/format";
 import BUser from "@/components/BUser.vue";
 import BConfirmModal from "@/components/BConfirmModal.vue";
+import BComment from "@/components/BComment.vue";
 
 export default defineComponent({
   name: 'ProjectIdeas',
   components: {
+    BComment,
     BConfirmModal,
     BUser,
     BIdeaEditModal,
@@ -330,8 +276,7 @@ export default defineComponent({
     MDBModalTitle,
     MDBSwitch,
     MDBTable,
-    MDBTextarea,
-    MDBTooltip
+    MDBTextarea
   },
   computed: {
     ideasView(): ideaView[] {
@@ -629,6 +574,10 @@ interface ideaView {
 </script>
 
 <style lang="scss">
+.ideas-tbl {
+  overflow: hidden;
+}
+
 .edit-icon {
   visibility: hidden;
   color: #00000080;
