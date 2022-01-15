@@ -1,21 +1,21 @@
 <template>
   <MDBContainer class="mt-3">
-    <MDBBtn color="light" floating size="md" style="margin-bottom: 0.5em;" class="float-end" title="Settings"
-            tag="a" :href="`/projects/${$route.params['id']}/settings`">
-      <MDBIcon icon="cog" iconStyle="fas" size="2x"/>
-    </MDBBtn>
-
-    <h1>
-      {{ options.caption }}
-      <MDBBtn outline="primary" rounded size="md" style="margin-bottom: 0.5em;"
-              aria-controls="addModal" @click="addForm">
-        <MDBIcon icon="plus" iconStyle="fas" class="me-1"/>
-        Add an idea
-      </MDBBtn>
-    </h1>
-
     <BContent :loading="loading || optionsLoading" :error="error || optionsError">
       <MDBCol>
+        <MDBBtn color="light" floating size="md" style="margin-bottom: 0.5em;" class="float-end" title="Settings"
+                tag="a" :href="`/projects/${$route.params['id']}/settings`">
+          <MDBIcon icon="cog" iconStyle="fas" size="2x"/>
+        </MDBBtn>
+
+        <h1>
+          {{ options.caption }}
+          <MDBBtn outline="primary" rounded size="md" style="margin-bottom: 0.5em;"
+                  aria-controls="addModal" @click="addForm">
+            <MDBIcon icon="plus" iconStyle="fas" class="me-1"/>
+            Add an idea
+          </MDBBtn>
+        </h1>
+
         <MDBModal size="lg" id="addModal" tabindex="-1" labelledby="addModalLabel" v-model="addModal">
           <form @submit.prevent="add" @keypress="formKeyPress">
             <MDBModalHeader>

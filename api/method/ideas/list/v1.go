@@ -2,12 +2,10 @@ package list
 
 import (
 	"context"
-	"errors"
 
 	"github.com/go-qbit/model"
 	"github.com/go-qbit/model/expr"
-
-	"riceboards/authctx"
+	"github.com/go-qbit/rpc"
 )
 
 type reqV1 struct {
@@ -49,17 +47,26 @@ type UserV1 struct {
 	AvatarUrl string `json:"avatar_url"`
 }
 
+var errorsV1 struct {
+	UnknownProject rpc.ErrorFunc `desc:"Unknown project"`
+}
+
+func (m *Method) ErrorsV1() interface{} {
+	return &errorsV1
+}
+
 func (m *Method) V1(ctx context.Context, r *reqV1) ([]ideaV1, error) {
-	if _, err := authctx.GetCurUserId(ctx); err != nil {
-		if errors.Is(err, authctx.ErrUnauthorized) {
-			return nil, nil
-		}
+	projectId, err := m.db.Projects.GetIdByStrId(ctx, r.ProjectId)
+	if err != nil {
 		return nil, err
+	}
+	if projectId == 0 {
+		return nil, errorsV1.UnknownProject("Unknown project")
 	}
 
 	var ideas []ideaV1
 	if err := m.db.Ideas.GetAllToStruct(ctx, &ideas, model.GetAllOptions{
-		Filter: expr.Any(m.db.Ideas, m.db.Projects, expr.Eq(m.db.Projects.FieldExpr("str_id"), expr.Value(r.ProjectId))),
+		Filter: expr.Eq(m.db.Ideas.FieldExpr("fk_project_id"), expr.Value(projectId)),
 	}); err != nil {
 		return nil, err
 	}

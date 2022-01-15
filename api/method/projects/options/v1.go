@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-qbit/model"
 	"github.com/go-qbit/model/expr"
+	"github.com/go-qbit/rpc"
 )
 
 type reqV1 struct {
@@ -49,6 +50,14 @@ type userV1 struct {
 	AvatarUrl string `json:"avatar_url"`
 }
 
+var errorsV1 struct {
+	UnknownProject rpc.ErrorFunc `desc:"Unknown project"`
+}
+
+func (m *Method) ErrorsV1() interface{} {
+	return &errorsV1
+}
+
 func (m *Method) V1(ctx context.Context, r *reqV1) (*optionsV1, error) {
 	var projects []optionsV1
 	if err := m.db.Projects.GetAllToStruct(ctx, &projects, model.GetAllOptions{
@@ -59,7 +68,7 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*optionsV1, error) {
 	}
 
 	if len(projects) == 0 {
-		return nil, nil
+		return nil, errorsV1.UnknownProject("Unknown project")
 	}
 
 	project := projects[0]

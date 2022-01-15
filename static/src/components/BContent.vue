@@ -4,11 +4,11 @@
       <div class="alert alert-danger">
         <strong>Something went wrong.</strong>
         <br><br>
-        Error:&nbsp;{{ error }}
+        {{ error }}
       </div>
 
       <div class="d-flex justify-content-center m-5" v-if="loading">
-        <MDBSpinner color="primary" size="5rem">Loading...</MDBSpinner>
+        <MDBSpinner color="primary" size="5rem"/>
       </div>
     </MDBCol>
 
