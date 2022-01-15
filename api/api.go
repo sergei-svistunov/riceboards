@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/go-qbit/rbac"
@@ -67,22 +68,24 @@ func New(db *db.Db, auth *webAuth.Auth) http.Handler {
 		gamesRpc.ServeHTTP(w, r.WithContext(ctx))
 	})
 
-	mux.HandleFunc("/swagger.json", func(w http.ResponseWriter, r *http.Request) {
-		swagger := gamesRpc.GetSwagger(r.Context())
-		swagger.Info.Title = "Football AI bot API"
-		swagger.Servers = []openapi.Server{
-			{"/api", ""},
-		}
+	if os.Getenv("DEV") != "" {
+		mux.HandleFunc("/swagger.json", func(w http.ResponseWriter, r *http.Request) {
+			swagger := gamesRpc.GetSwagger(r.Context())
+			swagger.Info.Title = "Football AI bot API"
+			swagger.Servers = []openapi.Server{
+				{"/api", ""},
+			}
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		if err := json.NewEncoder(w).Encode(swagger); err != nil {
-			log.Printf("Cannot marshal swagger.json: %v", err)
-			return
-		}
-	})
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			if err := json.NewEncoder(w).Encode(swagger); err != nil {
+				log.Printf("Cannot marshal swagger.json: %v", err)
+				return
+			}
+		})
 
-	mux.HandleFunc("/index.ts", typeScriptLibHandler(gamesRpc))
+		mux.HandleFunc("/index.ts", typeScriptLibHandler(gamesRpc))
+	}
 
 	return mux
 }
