@@ -243,10 +243,10 @@ import api, {
   IdeasListIdeaTeamV1,
   IdeasListIdeaV1,
   IdeasListUserV1,
-  IdeasOptionsConfidentV1,
-  IdeasOptionsGoalV1,
-  IdeasOptionsOptionsV1,
-  IdeasOptionsTeamV1
+  ProjectsOptionsConfidentV1,
+  ProjectsOptionsGoalV1,
+  ProjectsOptionsOptionsV1,
+  ProjectsOptionsTeamV1
 } from "@/api";
 import BContent from "@/components/BContent.vue";
 import BIdeaEditModal from "@/components/BIdeaEditModal.vue";
@@ -324,11 +324,11 @@ export default defineComponent({
       })
     },
 
-    confidentLevelsMap(): { [key: number]: IdeasOptionsConfidentV1 } {
+    confidentLevelsMap(): { [key: number]: ProjectsOptionsConfidentV1 } {
       return this.options && this.options.confident_levels ? this.options.confident_levels.reduce((res, cl) => {
         res[cl.id] = cl
         return res
-      }, {} as { [key: number]: IdeasOptionsConfidentV1 }) : {}
+      }, {} as { [key: number]: ProjectsOptionsConfidentV1 }) : {}
     },
   },
   data() {
@@ -338,7 +338,7 @@ export default defineComponent({
       error: '',
 
       addModal: false,
-      options: {} as IdeasOptionsOptionsV1,
+      options: {} as ProjectsOptionsOptionsV1,
       optionsLoading: false,
       optionsError: '',
       addData: {
@@ -398,7 +398,7 @@ export default defineComponent({
       this.loading = true
       this.error = ''
 
-      api.IdeasListV1({project_id: parseInt(this.$route.params['id'] as string)}).then(ideas => {
+      api.IdeasListV1({project_id: this.$route.params['id'] as string}).then(ideas => {
         this.ideas = ideas
       }).catch(err => {
         this.error = err
@@ -411,7 +411,7 @@ export default defineComponent({
       this.optionsLoading = true
       this.optionsError = ""
 
-      api.IdeasOptionsV1({project_id: parseInt(this.$route.params['id'] as string)}).then(options => {
+      api.ProjectsOptionsV1({project_id: this.$route.params['id'] as string}).then(options => {
         this.options = options
         this.load()
       }).catch(err => {
@@ -434,13 +434,13 @@ export default defineComponent({
       }
     },
 
-    filteredGoals(idea: ideaView): IdeasOptionsGoalV1[] {
+    filteredGoals(idea: ideaView): ProjectsOptionsGoalV1[] {
       return this.options.goals.filter(v => {
         return idea.goals[v.id]?.value || idea.goals[v.id]?.comment
       })
     },
 
-    filteredTeams(idea: ideaView): IdeasOptionsTeamV1[] {
+    filteredTeams(idea: ideaView): ProjectsOptionsTeamV1[] {
       return this.options.teams.filter(v => {
         return idea.teams[v.id]?.capacity || idea.teams[v.id]?.comment
       })
@@ -455,7 +455,7 @@ export default defineComponent({
       this.addError = ''
 
       api.IdeasAddV1({
-        project_id: parseInt(this.$route.params['id'] as string),
+        project_id: this.$route.params['id'] as string,
         caption: this.addData.caption
       }).then(() => {
         this.addModal = false

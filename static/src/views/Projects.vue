@@ -8,7 +8,20 @@
           <tbody>
           <tr v-for="project in projects" :key="project.id">
             <td class="position-relative">
+              <router-link :to="`/projects/${project.id}`" class="stretched-link">
+                <MDBBadge color="primary">{{ project.id }}</MDBBadge>
+              </router-link>
+            </td>
+
+            <td class="position-relative">
               <router-link :to="`/projects/${project.id}`" class="stretched-link">{{ project.caption }}</router-link>
+            </td>
+
+            <td class="text-end">
+              <MDBBtn color="light" floating size="sm" title="Settings" tag="a"
+                      :href="`/projects/${project.id}/settings`">
+                <MDBIcon icon="cog" iconStyle="fas" size="md"/>
+              </MDBBtn>
             </td>
           </tr>
           </tbody>
@@ -34,7 +47,8 @@
       </MDBModalHeader>
 
       <MDBModalBody>
-        <MDBInput label="Caption" required v-model="addData.caption" :disabled="adding"/>
+        <MDBInput label="Id" required v-model="addData.id" :disabled="adding"/>
+        <MDBInput label="Caption" required class="mt-3" v-model="addData.caption" :disabled="adding"/>
 
         <div class="alert alert-danger mt-3" v-if="addError">{{ addError }}</div>
       </MDBModalBody>
@@ -51,6 +65,7 @@ import api, {ProjectsListProjectV1} from '@/api';
 import {defineComponent} from 'vue'
 import BContent from "@/components/BContent.vue";
 import {
+  MDBBadge,
   MDBBtn,
   MDBCol,
   MDBContainer,
@@ -68,6 +83,7 @@ export default defineComponent({
   name: 'Projects',
   components: {
     BContent,
+    MDBBadge,
     MDBBtn,
     MDBCol,
     MDBContainer,
@@ -88,6 +104,7 @@ export default defineComponent({
 
       addModal: false,
       addData: {
+        id: '',
         caption: ''
       },
       adding: false,

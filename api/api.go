@@ -17,11 +17,11 @@ import (
 	mIdeasDelete "riceboards/api/method/ideas/delete"
 	mIdeasEdit "riceboards/api/method/ideas/edit"
 	mIdeasList "riceboards/api/method/ideas/list"
-	mIdeasOptions "riceboards/api/method/ideas/options"
 	mProjectsAdd "riceboards/api/method/projects/add"
 	mProjectsEdit "riceboards/api/method/projects/edit"
 	mProjectsGet "riceboards/api/method/projects/get"
 	mProjectsList "riceboards/api/method/projects/list"
+	mProjectsOptions "riceboards/api/method/projects/options"
 	"riceboards/authctx"
 	"riceboards/db"
 )
@@ -36,11 +36,11 @@ func New(db *db.Db, auth *webAuth.Auth) http.Handler {
 		mProjectsGet.New(db),
 		mProjectsEdit.New(db),
 		mProjectsList.New(db),
+		mProjectsOptions.New(db),
 		mIdeasAdd.New(db),
 		mIdeasDelete.New(db),
 		mIdeasEdit.New(db),
 		mIdeasList.New(db),
-		mIdeasOptions.New(db),
 	); err != nil {
 		panic(err)
 	}

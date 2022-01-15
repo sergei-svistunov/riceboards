@@ -11,7 +11,7 @@ import (
 )
 
 type reqV1 struct {
-	Id                uint32 `json:"id"`
+	Id                string `json:"id"`
 	Caption           string `json:"caption"`
 	ReachFormat       uint8  `json:"reach_format"`
 	ReachDescription  string `json:"reach_description"`
@@ -40,7 +40,7 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*struct{}, error) {
 
 	if err := m.db.Storage.DoInTransaction(ctx, func(ctx context.Context) error {
 		data, err := m.db.Projects.GetAll(ctx, []string{"id"}, model.GetAllOptions{
-			Filter:    expr.Eq(m.db.Projects.FieldExpr("id"), expr.Value(r.Id)),
+			Filter:    expr.Eq(m.db.Projects.FieldExpr("str_id"), expr.Value(r.Id)),
 			Limit:     1,
 			ForUpdate: true,
 		})
@@ -51,7 +51,7 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*struct{}, error) {
 			return errorsV1.UnknownProject("Unknown project")
 		}
 
-		return m.db.Projects.Edit(ctx, expr.Eq(m.db.Projects.FieldExpr("id"), expr.Value(r.Id)), map[string]interface{}{
+		return m.db.Projects.Edit(ctx, expr.Eq(m.db.Projects.FieldExpr("str_id"), expr.Value(r.Id)), map[string]interface{}{
 			"caption":            r.Caption,
 			"reach_format":       r.ReachFormat,
 			"reach_description":  r.ReachDescription,

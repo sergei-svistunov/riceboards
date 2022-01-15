@@ -93,11 +93,6 @@ export default class API {
         return this.post('/ideas/list/v1', request)
     }
 
-    // Returns the ideas options
-    public static IdeasOptionsV1(request: IdeasOptionsReqV1): Promise<IdeasOptionsOptionsV1> {
-        return this.post('/ideas/options/v1', request)
-    }
-
     // Add a new project
     public static ProjectsAddV1(request: ProjectsAddReqV1): Promise<ProjectsAddProjectV1> {
         return this.post('/projects/add/v1', request)
@@ -116,6 +111,11 @@ export default class API {
     // Returns projects list
     public static ProjectsListV1(request: ProjectsListReqV1): Promise<ProjectsListProjectV1[]> {
         return this.post('/projects/list/v1', request)
+    }
+
+    // Returns the ideas options
+    public static ProjectsOptionsV1(request: ProjectsOptionsReqV1): Promise<ProjectsOptionsOptionsV1> {
+        return this.post('/projects/options/v1', request)
     }
 }
 
@@ -149,7 +149,7 @@ export interface IdeasAddIdeaV1 {
 }
 
 export interface IdeasAddReqV1 {
-    project_id: number;
+    project_id: string;
     caption: string;
     comment?: string;
 }
@@ -205,7 +205,7 @@ export interface IdeasListIdeaV1 {
 }
 
 export interface IdeasListReqV1 {
-    project_id: number;
+    project_id: string;
 }
 
 export interface IdeasListUserV1 {
@@ -214,58 +214,17 @@ export interface IdeasListUserV1 {
     avatar_url: string;
 }
 
-export interface IdeasOptionsConfidentV1 {
-    id: number;
-    caption: string;
-    weight: number;
-}
-
-export interface IdeasOptionsGoalV1 {
-    id: number;
-    caption: string;
-    format: number;
-    divider: number;
-}
-
-export interface IdeasOptionsOptionsV1 {
-    caption: string;
-    reach_format: number;
-    reach_description: string;
-    effort_description: string;
-    money_symbol: string;
-    confident_levels: IdeasOptionsConfidentV1[];
-    goals: IdeasOptionsGoalV1[];
-    teams: IdeasOptionsTeamV1[];
-    users: IdeasOptionsUserV1[];
-}
-
-export interface IdeasOptionsReqV1 {
-    project_id: number;
-    with_users?: boolean;
-}
-
-export interface IdeasOptionsTeamV1 {
-    id: number;
-    caption: string;
-}
-
-export interface IdeasOptionsUserV1 {
-    fullname: string;
-    email: string;
-    avatar_url: string;
-}
-
 export interface ProjectsAddProjectV1 {
     id: number;
-    caption: string;
 }
 
 export interface ProjectsAddReqV1 {
+    id: string;
     caption: string;
 }
 
 export interface ProjectsEditReqV1 {
-    id: number;
+    id: string;
     caption: string;
     reach_format: number;
     reach_description: string;
@@ -274,21 +233,62 @@ export interface ProjectsEditReqV1 {
 }
 
 export interface ProjectsGetProjectV1 {
-    id: number;
+    id: string;
     caption: string;
 }
 
 export interface ProjectsGetReqV1 {
-    id: number;
+    id: string;
 }
 
 export interface ProjectsListProjectV1 {
-    id: number;
+    id: string;
     caption: string;
 }
 
 // eslint-disable-next-line
 export interface ProjectsListReqV1 {
+}
+
+export interface ProjectsOptionsConfidentV1 {
+    id: number;
+    caption: string;
+    weight: number;
+}
+
+export interface ProjectsOptionsGoalV1 {
+    id: number;
+    caption: string;
+    format: number;
+    divider: number;
+}
+
+export interface ProjectsOptionsOptionsV1 {
+    caption: string;
+    reach_format: number;
+    reach_description: string;
+    effort_description: string;
+    money_symbol: string;
+    confident_levels: ProjectsOptionsConfidentV1[];
+    goals: ProjectsOptionsGoalV1[];
+    teams: ProjectsOptionsTeamV1[];
+    users: ProjectsOptionsUserV1[];
+}
+
+export interface ProjectsOptionsReqV1 {
+    project_id: string;
+    with_users?: boolean;
+}
+
+export interface ProjectsOptionsTeamV1 {
+    id: number;
+    caption: string;
+}
+
+export interface ProjectsOptionsUserV1 {
+    fullname: string;
+    email: string;
+    avatar_url: string;
 }
 
 // eslint-disable-next-line

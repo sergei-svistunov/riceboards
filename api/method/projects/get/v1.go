@@ -11,11 +11,11 @@ import (
 )
 
 type reqV1 struct {
-	Id uint32 `json:"id"`
+	Id string `json:"id"`
 }
 
 type projectV1 struct {
-	Id      uint32 `json:"id"`
+	Id      string `json:"id" field:"str_id"`
 	Caption string `json:"caption"`
 }
 
@@ -29,7 +29,7 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*projectV1, error) {
 
 	var projects []projectV1
 	if err := m.db.Projects.GetAllToStruct(ctx, &projects, model.GetAllOptions{
-		Filter: expr.Eq(m.db.Projects.FieldExpr("id"), expr.Value(r.Id)),
+		Filter: expr.Eq(m.db.Projects.FieldExpr("str_id"), expr.Value(r.Id)),
 		Limit:  1,
 	}); err != nil {
 		return nil, err

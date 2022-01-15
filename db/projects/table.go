@@ -36,6 +36,12 @@ func New(db *mysql.MySQL) *Table {
 				},
 
 				&mysql.VarCharField{
+					Id:      "str_id",
+					NotNull: true,
+					Length:  255,
+				},
+
+				&mysql.VarCharField{
 					Id:      "caption",
 					Length:  255,
 					NotNull: true,
@@ -92,7 +98,7 @@ func New(db *mysql.MySQL) *Table {
 					},
 				},
 				Indexes: []mysql.Index{
-					{[]string{"caption"}, true},
+					{[]string{"str_id"}, true},
 				},
 			},
 		),

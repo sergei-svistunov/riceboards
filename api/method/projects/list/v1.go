@@ -13,7 +13,7 @@ type reqV1 struct {
 }
 
 type projectV1 struct {
-	Id      uint32 `json:"id"`
+	Id      string `json:"id" field:"str_id"`
 	Caption string `json:"caption"`
 }
 

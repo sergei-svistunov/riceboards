@@ -150,7 +150,7 @@ import {
   MDBTabs
 } from "mdb-vue-ui-kit";
 import BContent from "@/components/BContent.vue";
-import api, {IdeasOptionsOptionsV1} from "@/api";
+import api, {ProjectsOptionsOptionsV1} from "@/api";
 import BUser from "@/components/BUser.vue";
 
 export default defineComponent({
@@ -172,7 +172,7 @@ export default defineComponent({
   data() {
     return {
       activeTab: 'settings',
-      options: {} as IdeasOptionsOptionsV1,
+      options: {} as ProjectsOptionsOptionsV1,
       loading: true,
       error: '',
 
@@ -205,8 +205,8 @@ export default defineComponent({
       this.loading = true
       this.error = ''
 
-      api.IdeasOptionsV1({
-        project_id: parseInt(this.$route.params['id'] as string),
+      api.ProjectsOptionsV1({
+        project_id: this.$route.params['id'] as string,
         with_users: true
       }).then(options => {
         this.options = options
@@ -222,7 +222,7 @@ export default defineComponent({
       this.settingsError = ''
 
       api.ProjectsEditV1({
-        id: parseInt(this.$route.params['id'] as string),
+        id: this.$route.params['id'] as string,
         caption: this.options.caption,
         effort_description: this.options.effort_description,
         money_symbol: this.options.money_symbol,

@@ -9,7 +9,7 @@ import (
 )
 
 type reqV1 struct {
-	ProjectId uint32 `json:"project_id"`
+	ProjectId string `json:"project_id"`
 	WithUsers *bool  `json:"with_users"`
 }
 
@@ -52,7 +52,7 @@ type userV1 struct {
 func (m *Method) V1(ctx context.Context, r *reqV1) (*optionsV1, error) {
 	var projects []optionsV1
 	if err := m.db.Projects.GetAllToStruct(ctx, &projects, model.GetAllOptions{
-		Filter: expr.Eq(m.db.Projects.FieldExpr("id"), expr.Value(r.ProjectId)),
+		Filter: expr.Eq(m.db.Projects.FieldExpr("str_id"), expr.Value(r.ProjectId)),
 		Limit:  1,
 	}); err != nil {
 		return nil, err

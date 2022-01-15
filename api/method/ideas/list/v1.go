@@ -11,7 +11,7 @@ import (
 )
 
 type reqV1 struct {
-	ProjectId uint32 `json:"project_id"`
+	ProjectId string `json:"project_id"`
 }
 
 type ideaV1 struct {
@@ -59,7 +59,7 @@ func (m *Method) V1(ctx context.Context, r *reqV1) ([]ideaV1, error) {
 
 	var ideas []ideaV1
 	if err := m.db.Ideas.GetAllToStruct(ctx, &ideas, model.GetAllOptions{
-		Filter: expr.Eq(m.db.Ideas.FieldExpr("fk_project_id"), expr.Value(r.ProjectId)),
+		Filter: expr.Any(m.db.Ideas, m.db.Projects, expr.Eq(m.db.Projects.FieldExpr("str_id"), expr.Value(r.ProjectId))),
 	}); err != nil {
 		return nil, err
 	}
