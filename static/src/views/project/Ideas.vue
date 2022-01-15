@@ -337,8 +337,6 @@ export default defineComponent({
       loading: true,
       error: '',
 
-      tooltips: {} as { [key: string]: boolean },
-
       addModal: false,
       options: {} as IdeasOptionsOptionsV1,
       optionsLoading: false,
