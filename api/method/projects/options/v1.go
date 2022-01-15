@@ -15,6 +15,7 @@ type reqV1 struct {
 }
 
 type optionsV1 struct {
+	Id                uint32        `json:"-"`
 	Caption           string        `json:"caption"`
 	ReachFormat       uint8         `json:"reach_format"`
 	ReachDescription  string        `json:"reach_description"`
@@ -91,7 +92,7 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*optionsV1, error) {
 		}
 
 		if err := m.db.ProjectsUsers.GetAllToStruct(ctx, &projectsUsers, model.GetAllOptions{
-			Filter: expr.Eq(m.db.ProjectsUsers.FieldExpr("fk_project_id"), expr.Value(r.ProjectId)),
+			Filter: expr.Eq(m.db.ProjectsUsers.FieldExpr("fk_project_id"), expr.Value(project.Id)),
 		}); err != nil {
 			return nil, err
 		}
