@@ -19,10 +19,21 @@ import (
 	mIdeasEdit "riceboards/api/method/ideas/edit"
 	mIdeasList "riceboards/api/method/ideas/list"
 	mProjectsAdd "riceboards/api/method/projects/add"
+	mProjectsConfidenceAdd "riceboards/api/method/projects/confidence/add"
+	mProjectsConfidenceDelete "riceboards/api/method/projects/confidence/delete"
+	mProjectsConfidenceEdit "riceboards/api/method/projects/confidence/edit"
 	mProjectsEdit "riceboards/api/method/projects/edit"
 	mProjectsGet "riceboards/api/method/projects/get"
+	mProjectsGoalsAdd "riceboards/api/method/projects/goals/add"
+	mProjectsGoalsDelete "riceboards/api/method/projects/goals/delete"
+	mProjectsGoalsEdit "riceboards/api/method/projects/goals/edit"
 	mProjectsList "riceboards/api/method/projects/list"
 	mProjectsOptions "riceboards/api/method/projects/options"
+	mProjectsTeamsAdd "riceboards/api/method/projects/teams/add"
+	mProjectsTeamsDelete "riceboards/api/method/projects/teams/delete"
+	mProjectsTeamsEdit "riceboards/api/method/projects/teams/edit"
+	mProjectsUsersAdd "riceboards/api/method/projects/users/add"
+	mProjectsUsersDelete "riceboards/api/method/projects/users/delete"
 	"riceboards/authctx"
 	"riceboards/db"
 )
@@ -38,6 +49,17 @@ func New(db *db.Db, auth *webAuth.Auth) http.Handler {
 		mProjectsEdit.New(db),
 		mProjectsList.New(db),
 		mProjectsOptions.New(db),
+		mProjectsUsersAdd.New(db),
+		mProjectsUsersDelete.New(db),
+		mProjectsGoalsAdd.New(db),
+		mProjectsGoalsDelete.New(db),
+		mProjectsGoalsEdit.New(db),
+		mProjectsTeamsAdd.New(db),
+		mProjectsTeamsDelete.New(db),
+		mProjectsTeamsEdit.New(db),
+		mProjectsConfidenceAdd.New(db),
+		mProjectsConfidenceDelete.New(db),
+		mProjectsConfidenceEdit.New(db),
 		mIdeasAdd.New(db),
 		mIdeasDelete.New(db),
 		mIdeasEdit.New(db),

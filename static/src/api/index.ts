@@ -98,6 +98,21 @@ export default class API {
         return this.post('/projects/add/v1', request)
     }
 
+    // Add a new project confidence level
+    public static ProjectsConfidenceAddV1(request: ProjectsConfidenceAddReqV1): Promise<Struct_c7d8f8ae> {
+        return this.post('/projects/confidence/add/v1', request)
+    }
+
+    // Delete the project confidence level
+    public static ProjectsConfidenceDeleteV1(request: ProjectsConfidenceDeleteReqV1): Promise<Struct_c7d8f8ae> {
+        return this.post('/projects/confidence/delete/v1', request)
+    }
+
+    // Edit the project confidence level
+    public static ProjectsConfidenceEditV1(request: ProjectsConfidenceEditReqV1): Promise<Struct_c7d8f8ae> {
+        return this.post('/projects/confidence/edit/v1', request)
+    }
+
     // Edit the project
     public static ProjectsEditV1(request: ProjectsEditReqV1): Promise<Struct_c7d8f8ae> {
         return this.post('/projects/edit/v1', request)
@@ -108,6 +123,21 @@ export default class API {
         return this.post('/projects/get/v1', request)
     }
 
+    // Add a new project goal
+    public static ProjectsGoalsAddV1(request: ProjectsGoalsAddReqV1): Promise<Struct_c7d8f8ae> {
+        return this.post('/projects/goals/add/v1', request)
+    }
+
+    // Delete the project goal
+    public static ProjectsGoalsDeleteV1(request: ProjectsGoalsDeleteReqV1): Promise<Struct_c7d8f8ae> {
+        return this.post('/projects/goals/delete/v1', request)
+    }
+
+    // Edit the project goal
+    public static ProjectsGoalsEditV1(request: ProjectsGoalsEditReqV1): Promise<Struct_c7d8f8ae> {
+        return this.post('/projects/goals/edit/v1', request)
+    }
+
     // Returns projects list
     public static ProjectsListV1(request: ProjectsListReqV1): Promise<ProjectsListProjectV1[]> {
         return this.post('/projects/list/v1', request)
@@ -116,6 +146,31 @@ export default class API {
     // Returns the ideas options
     public static ProjectsOptionsV1(request: ProjectsOptionsReqV1): Promise<ProjectsOptionsOptionsV1> {
         return this.post('/projects/options/v1', request)
+    }
+
+    // Add a new project team
+    public static ProjectsTeamsAddV1(request: ProjectsTeamsAddReqV1): Promise<Struct_c7d8f8ae> {
+        return this.post('/projects/teams/add/v1', request)
+    }
+
+    // Delete the project team
+    public static ProjectsTeamsDeleteV1(request: ProjectsTeamsDeleteReqV1): Promise<Struct_c7d8f8ae> {
+        return this.post('/projects/teams/delete/v1', request)
+    }
+
+    // Edit the project team
+    public static ProjectsTeamsEditV1(request: ProjectsTeamsEditReqV1): Promise<Struct_c7d8f8ae> {
+        return this.post('/projects/teams/edit/v1', request)
+    }
+
+    // Add a new project user
+    public static ProjectsUsersAddV1(request: ProjectsUsersAddReqV1): Promise<Struct_c7d8f8ae> {
+        return this.post('/projects/users/add/v1', request)
+    }
+
+    // Delete the project user
+    public static ProjectsUsersDeleteV1(request: ProjectsUsersDeleteReqV1): Promise<Struct_c7d8f8ae> {
+        return this.post('/projects/users/delete/v1', request)
     }
 }
 
@@ -223,6 +278,24 @@ export interface ProjectsAddReqV1 {
     caption: string;
 }
 
+export interface ProjectsConfidenceAddReqV1 {
+    project_id: string;
+    caption: string;
+    weight: number;
+}
+
+export interface ProjectsConfidenceDeleteReqV1 {
+    project_id: string;
+    id: number;
+}
+
+export interface ProjectsConfidenceEditReqV1 {
+    project_id: string;
+    id: number;
+    caption: string;
+    weight: number;
+}
+
 export interface ProjectsEditReqV1 {
     id: string;
     caption: string;
@@ -239,6 +312,26 @@ export interface ProjectsGetProjectV1 {
 
 export interface ProjectsGetReqV1 {
     id: string;
+}
+
+export interface ProjectsGoalsAddReqV1 {
+    project_id: string;
+    caption: string;
+    format: number;
+    divider: number;
+}
+
+export interface ProjectsGoalsDeleteReqV1 {
+    project_id: string;
+    id: number;
+}
+
+export interface ProjectsGoalsEditReqV1 {
+    project_id: string;
+    id: number;
+    caption: string;
+    format: number;
+    divider: number;
 }
 
 export interface ProjectsListProjectV1 {
@@ -289,6 +382,32 @@ export interface ProjectsOptionsUserV1 {
     fullname: string;
     email: string;
     avatar_url: string;
+}
+
+export interface ProjectsTeamsAddReqV1 {
+    project_id: string;
+    caption: string;
+}
+
+export interface ProjectsTeamsDeleteReqV1 {
+    project_id: string;
+    id: number;
+}
+
+export interface ProjectsTeamsEditReqV1 {
+    project_id: string;
+    id: number;
+    caption: string;
+}
+
+export interface ProjectsUsersAddReqV1 {
+    project_id: string;
+    e_mail: string;
+}
+
+export interface ProjectsUsersDeleteReqV1 {
+    project_id: string;
+    e_mail: string;
 }
 
 // eslint-disable-next-line
