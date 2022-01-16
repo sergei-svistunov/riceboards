@@ -48,22 +48,70 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*projectV1, error) {
 		return nil, errorsV1.EmptyCaption("Caption must be filled")
 	}
 
-	pks, err := m.db.Projects.AddFromStructs(ctx, []struct {
-		FkOwnerId uint32
-		StrId     string
-		Caption   string
-	}{
-		{curUserId, r.Id, r.Caption},
-	}, model.AddOptions{})
-	if err != nil {
-		if db.IsDuplicateEntryErr(err) {
-			return nil, errorsV1.AlreadyExists("The project ID is already busy")
+	var projectId uint32
+	if err := m.db.Storage.DoInTransaction(ctx, func(ctx context.Context) error {
+		pks, err := m.db.Projects.AddFromStructs(ctx, []struct {
+			FkOwnerId uint32
+			StrId     string
+			Caption   string
+		}{
+			{curUserId, r.Id, r.Caption},
+		}, model.AddOptions{})
+		if err != nil {
+			if db.IsDuplicateEntryErr(err) {
+				return errorsV1.AlreadyExists("The project ID is already busy")
+			}
+
+			return err
+		}
+		projectId = pks.Data()[0][0].(uint32)
+
+		if _, err := m.db.ConfidentLevels.AddFromStructs(ctx, []struct {
+			FkProjectId uint32
+			FkOwnerId   uint32
+			Weight      float64
+			Caption     string
+		}{
+			{projectId, curUserId, 1, "Self conviction"},
+			{projectId, curUserId, 2, "Others opinions"},
+			{projectId, curUserId, 3, "Estimates & plans"},
+			{projectId, curUserId, 4, "Anecdotal evidence"},
+			{projectId, curUserId, 5, "Market data"},
+			{projectId, curUserId, 6, "User/customer evidence"},
+			{projectId, curUserId, 8, "Test results"},
+			{projectId, curUserId, 10, "Launch data"},
+		}, model.AddOptions{}); err != nil {
+			return err
 		}
 
+		if _, err := m.db.Goals.AddFromStructs(ctx, []struct {
+			FkProjectId uint32
+			FkOwnerId   uint32
+			Caption     string
+			Format      uint8
+			Divider     float64
+		}{
+			{projectId, curUserId, "Money", 2, 1_000_000},
+		}, model.AddOptions{}); err != nil {
+			return err
+		}
+
+		if _, err := m.db.Teams.AddFromStructs(ctx, []struct {
+			FkProjectId uint32
+			FkOwnerId   uint32
+			Caption     string
+		}{
+			{projectId, curUserId, "Development"},
+		}, model.AddOptions{}); err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
 		return nil, err
 	}
 
 	return &projectV1{
-		Id: pks.Data()[0][0].(uint32),
+		Id: projectId,
 	}, nil
 }

@@ -2,7 +2,14 @@
   <MDBContainer>
     <BContent :loading="loading" :error="error">
       <MDBCol md="12" class="mt-3">
-        <h1>My projects</h1>
+        <h1>
+          My projects
+          <MDBBtn outline="primary" rounded size="md" style="margin-bottom: 0.5em;"
+                  aria-controls="addModal" @click="addForm">
+            <MDBIcon icon="plus" iconStyle="fas" class="me-1"/>
+            Add a project
+          </MDBBtn>
+        </h1>
 
         <MDBTable striped sm class="mt-3">
           <tbody>
@@ -28,12 +35,6 @@
         </MDBTable>
 
         <div class="alert alert-warning" v-if="projects.length === 0">No projects was found</div>
-
-        <MDBBtn outline="primary" rounded size="md" style="margin-bottom: 0.5em;"
-                aria-controls="addModal" @click="addForm">
-          <MDBIcon icon="plus" iconStyle="fas" class="me-1"/>
-          Add a project
-        </MDBBtn>
 
       </MDBCol>
 
