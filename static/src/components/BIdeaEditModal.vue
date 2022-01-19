@@ -49,7 +49,7 @@ export default defineComponent({
       required: true
     },
     onSave: {
-      type: Function as PropType<() => void>,
+      type: Function as PropType<(id?: number) => void>,
       required: true,
     },
   },
@@ -74,7 +74,7 @@ export default defineComponent({
       this.saving = true
       this.error = ''
       api.IdeasEditV1(this.data).then(() => {
-        this.onSave()
+        this.onSave(this.data.id)
         this.show = false
       }).catch(err => {
         this.error = err

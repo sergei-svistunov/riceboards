@@ -57,7 +57,8 @@
           </thead>
 
           <tbody>
-          <tr v-for="(idea, i) in ideasView" :key="idea.id" :class="{'table-warning': idea.score === undefined}">
+          <tr v-for="(idea, i) in ideasView" :key="idea.id" :id="`idea${idea.id}`"
+              :class="{'table-warning': idea.score === undefined, current: curIdeaId === idea.id} ">
             <th>{{ i + 1 }}</th>
             <th class="position-relative">
               <BUser :name="idea.owner.fullname" :email="idea.owner.email" :avatar-url="idea.owner.avatar_url"
@@ -324,6 +325,11 @@ export default defineComponent({
       })
     },
 
+    curIdeaId(): number | undefined {
+      const match = /idea(\d+)/.exec(this.$route.hash)
+      return match ? parseInt(match[1]) : undefined
+    },
+
     confidentLevelsMap(): { [key: number]: ProjectsOptionsConfidentV1 } {
       return this.options && this.options.confident_levels ? this.options.confident_levels.reduce((res, cl) => {
         res[cl.id] = cl
@@ -390,16 +396,35 @@ export default defineComponent({
       deleteIdeaCur: {} as ideaView,
     }
   },
+  watch: {
+    curIdeaId() {
+      this.scrollToIdea()
+    },
+    ideasView() {
+      this.$nextTick(() => {
+        this.scrollToIdea()
+      })
+    }
+  },
   mounted() {
     this.loadOptions()
   },
   methods: {
-    load() {
+    scrollToIdea() {
+      const ideaEl = document.getElementById(`idea${this.curIdeaId}`)
+      ideaEl && ideaEl.scrollIntoView()
+    },
+
+    load(id?: number) {
       this.loading = true
       this.error = ''
 
       api.IdeasListV1({project_id: this.$route.params['id'] as string}).then(ideas => {
         this.ideas = ideas
+        if (id) {
+          location.hash = `#idea${id}`
+        }
+        setTimeout(this.scrollToIdea, 100)
       }).catch(err => {
         this.error = err
       }).finally(() => {
@@ -596,5 +621,24 @@ th:hover a.edit-link .edit-icon, td:hover a.edit-link .edit-icon {
 
 tr:hover a.action-link, tr:hover a.action-link {
   visibility: visible;
+}
+
+tr.current > *, .table-striped > tbody > tr.current:nth-of-type(odd) > * {
+  animation: target-fade 3s 1;
+}
+
+@keyframes target-fade {
+  0% {
+    --mdb-table-accent-bg: transparent;
+    background-color: #f0d8ff;
+  }
+  50% {
+    --mdb-table-accent-bg: transparent;
+    background-color: #f0d8ff;
+  }
+  100% {
+    --mdb-table-accent-bg: default;
+    background-color: transparent;
+  }
 }
 </style>
