@@ -1,5 +1,5 @@
 <template>
-  <MDBContainer>
+  <MDBContainer class="mt-3">
     <MDBRow>
       <MDBCol>
         <h1>What is the RICE scoring model for prioritization?</h1>
@@ -58,15 +58,26 @@
           of time—typically “person-months”—and that is your score.</p>
       </MDBCol>
     </MDBRow>
+
+    <MDBRow class="mb-3" v-if="!$rbac.hasPermission('project.view')">
+      <MDBCol>
+        <MDBBtn color="primary" size="lg" @click="doLogin">Login to start</MDBBtn>
+      </MDBCol>
+    </MDBRow>
   </MDBContainer>
 </template>
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {MDBCol, MDBContainer, MDBRow} from "mdb-vue-ui-kit";
+import {MDBBtn, MDBCol, MDBContainer, MDBRow} from "mdb-vue-ui-kit";
 
 export default defineComponent({
   name: 'Home',
-  components: {MDBContainer, MDBRow, MDBCol},
+  components: {MDBBtn, MDBContainer, MDBRow, MDBCol},
+  methods: {
+    doLogin() {
+      window.google.accounts.id.prompt()
+    }
+  }
 });
 </script>

@@ -27,27 +27,13 @@
         />
         </MDBDropdownToggle>
         <MDBDropdownMenu animation>
-          <MDBDropdownItem href="#logout"
-                           @click.prevent="$store.commit('removeUser');$rbac.setPermissions([]);showLogin()">Logout
+          <MDBDropdownItem href="#logout" @click.prevent="doLogout">Logout
           </MDBDropdownItem>
         </MDBDropdownMenu>
       </MDBDropdown>
 
       <MDBNavbarItem v-else>
-        <div id="g_id_onload"
-             data-client_id="709309428199-nnm1q8kikmg9n95f287suqmvoi0tm2go.apps.googleusercontent.com"
-             data-context="signin"
-             data-ux_mode="popup"
-             data-auto_prompt="false">
-        </div>
-
-        <div class="g_id_signin"
-             data-type="standard"
-             data-shape="pill"
-             data-theme="outline"
-             data-size="large"
-             data-logo_alignment="left">
-        </div>
+        <div id="gsi-btn"/>
       </MDBNavbarItem>
     </MDBNavbarNav>
   </MDBNavbar>
@@ -56,7 +42,7 @@
 </template>
 
 <script>
-import {defineComponent} from "vue"
+import {defineComponent} from 'vue'
 import {
   MDBCollapse,
   MDBDropdown,
@@ -69,8 +55,8 @@ import {
   MDBNavbarNav,
   MDBNavbarToggler
 } from 'mdb-vue-ui-kit'
-import googleOneTap from 'google-one-tap'
 import api from "@/api";
+import google_on_tap from "@/gsi";
 
 export default defineComponent({
   name: 'App',
@@ -111,29 +97,35 @@ export default defineComponent({
       this.showLogin()
     }
   },
-
   methods: {
     showLogin() {
-      googleOneTap({
-        client_id: '1030387876775-48acocqe8ue99usaja3a70pis4125drl.apps.googleusercontent.com', // required
-        auto_select: false, // optional
-        cancel_on_tap_outside: false, // optional
-        context: 'signin', // optional
-      }, (response) => {
-        api.AuthGoogleV1({
-          credential: response.credential
-        }).then(user => {
-          this.$store.commit('setUser', user)
-          this.$rbac.setPermissions(user.permissions)
-        }).catch(err => {
-          alert(err)
-        })
-      });
+      google_on_tap({
+        client_id: '1030387876775-48acocqe8ue99usaja3a70pis4125drl.apps.googleusercontent.com',
+        callback: this.doLogin
+      })
+    },
+
+    doLogin(response) {
+      api.AuthGoogleV1({
+        credential: response.credential
+      }).then(user => {
+        this.$store.commit('setUser', user)
+        this.$rbac.setPermissions(user.permissions)
+      }).catch(err => {
+        alert(err)
+      })
+    },
+
+    doLogout() {
+      this.$store.commit('removeUser')
+      this.$rbac.setPermissions([])
+      this.$router.push('/')
     }
+
   }
 })
 </script>
 
 <style lang="scss">
-@import '~@/../mdb/scss/index.free.scss';
+@import 'mdb/scss/index.free';
 </style>
