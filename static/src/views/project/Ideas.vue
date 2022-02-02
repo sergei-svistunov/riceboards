@@ -58,7 +58,7 @@
 
           <tbody>
           <tr v-for="(idea, i) in ideasView" :key="idea.id" :id="`idea${idea.id}`"
-              :class="{'table-warning': idea.score === undefined, current: curIdeaId === idea.id} ">
+              :class="{'table-warning': idea.score === undefined || !idea.filled_effort, current: curIdeaId === idea.id} ">
             <th>{{ i + 1 }}</th>
             <th class="position-relative">
               <BUser :name="idea.owner.fullname" :email="idea.owner.email" :avatar-url="idea.owner.avatar_url"
@@ -125,8 +125,11 @@
               <ul class="list-unstyled mb-0" v-if="filteredTeams(idea).length">
                 <li v-for="team in filteredTeams(idea)" :key="team.id">
                   <BUser :email="idea.teams[team.id].owner.email" :name="idea.teams[team.id].owner.fullname"
-                         :avatar-url="idea.teams[team.id].owner.avatar_url" hide-name avatar-size="16"/>
-                  <span class="ms-2">{{ team.caption }}:&nbsp;{{ idea.teams[team.id].capacity }}</span>
+                         :avatar-url="idea.teams[team.id].owner.avatar_url" hide-name avatar-size="16"
+                         v-if="idea.teams[team.id]"/>
+                  <span :class="{'ms-2': idea.teams[team.id], 'text-danger': !idea.teams[team.id]}">{{ team.caption }}:&nbsp;{{
+                      idea.teams[team.id]?.capacity || '&mdash;'
+                    }}</span>
                   <BComment class="ms-1" :text="idea.teams[team.id]?.comment" v-if="idea.teams[team.id]?.comment"/>
                 </li>
               </ul>
@@ -318,10 +321,15 @@ export default defineComponent({
           goals: goals,
           teams: teams,
           score: score,
-          owner: idea.owner
+          owner: idea.owner,
+          filled_effort: this.options?.teams.filter((team => {
+            return teams[team.id] === undefined
+          })).length === 0
         }
       }).sort((a, b) => {
-        return (b.score || 0) - (a.score || 0)
+        return a.filled_effort == b.filled_effort
+            ? (b.score || 0) - (a.score || 0)
+            : (b.filled_effort ? 1 : 0) - (a.filled_effort ? 1 : 0)
       })
     },
 
@@ -466,8 +474,11 @@ export default defineComponent({
     },
 
     filteredTeams(idea: ideaView): ProjectsOptionsTeamV1[] {
+      if (Object.keys(idea.teams).length === 0)
+        return []
+
       return this.options.teams.filter(v => {
-        return idea.teams[v.id]?.capacity || idea.teams[v.id]?.comment
+        return idea.teams[v.id]?.capacity !== 0 || idea.teams[v.id]?.comment
       })
     },
 
