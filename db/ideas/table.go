@@ -54,6 +54,11 @@ func New(db *mysql.MySQL) *Table {
 				&mysql.TextField{
 					Id: "confident_comment",
 				},
+
+				&mysql.BooleanField{
+					Id:      "done",
+					NotNull: true,
+				},
 			},
 
 			[]model.IFieldDefinition{},

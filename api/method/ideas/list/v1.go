@@ -24,6 +24,7 @@ type ideaV1 struct {
 	ConfidentComment *string      `json:"confident_comment,omitempty"`
 	Goals            []IdeaGoalV1 `json:"goals,omitempty" field:"idea_goals"`
 	Teams            []IdeaTeamV1 `json:"teams,omitempty" field:"idea_teams"`
+	Done             bool         `json:"done"`
 	Owner            UserV1       `json:"owner"`
 }
 

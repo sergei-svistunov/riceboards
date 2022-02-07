@@ -58,7 +58,11 @@
 
           <tbody>
           <tr v-for="(idea, i) in ideasView" :key="idea.id" :id="`idea${idea.id}`"
-              :class="{'table-warning': idea.score === undefined || !idea.filled_effort, current: curIdeaId === idea.id} ">
+              :class="{
+                  'table-warning': (idea.score === undefined || !idea.filled_effort) && !idea.done,
+                  'table-success': idea.done,
+                  'current': curIdeaId === idea.id
+              }">
             <th>{{ i + 1 }}</th>
             <th class="position-relative">
               <BUser :name="idea.owner.fullname" :email="idea.owner.email" :avatar-url="idea.owner.avatar_url"
@@ -76,6 +80,7 @@
               </a>
               <MDBIcon icon="dev" iconStyle="fab" v-if="idea.ready_for_dev" title="Ready for development"
                        class="ms-2"/>
+              <MDBIcon icon="check-circle" iconStyle="fas" v-if="idea.done" title="Done" class="ms-2"/>
             </td>
 
             <td class="position-relative">
@@ -167,6 +172,7 @@
       <MDBTextarea label="Comment" class="mt-3" v-model="editIdeaData.comment"/>
       <MDBInput label="Link" class="mt-3" v-model="editIdeaData.link" maxLength="255"/>
       <MDBSwitch label="Ready for dev" wrapper-class="mt-3" v-model="editIdeaData.ready_for_dev"/>
+      <MDBSwitch label="Done" wrapper-class="mt-3" v-model="editIdeaData.done"/>
       <MDBSwitch label="Make me the idea owner" wrapper-class="mt-3" v-model="editIdeaData.make_me_owner"
                  v-if="!editIdeaOwner"/>
     </BIdeaEditModal>
@@ -313,6 +319,7 @@ export default defineComponent({
           caption: idea.caption,
           comment: idea.comment,
           ready_for_dev: idea.ready_for_dev,
+          done: idea.done,
           link: idea.link,
           reach: idea.reach,
           reach_comment: idea.reach_comment,
@@ -327,9 +334,11 @@ export default defineComponent({
           })).length === 0
         }
       }).sort((a, b) => {
-        return a.filled_effort == b.filled_effort
-            ? (b.score || 0) - (a.score || 0)
-            : (b.filled_effort ? 1 : 0) - (a.filled_effort ? 1 : 0)
+        return a.done == b.done ?
+            a.filled_effort == b.filled_effort
+                ? (b.score || 0) - (a.score || 0)
+                : (b.filled_effort ? 1 : 0) - (a.filled_effort ? 1 : 0)
+            : (a.done ? 1 : 0) - (b.done ? 1 : 0)
       })
     },
 
@@ -369,6 +378,7 @@ export default defineComponent({
         comment: '',
         link: '',
         ready_for_dev: false,
+        done: false,
         make_me_owner: false,
       },
 
@@ -510,6 +520,7 @@ export default defineComponent({
         comment: idea.comment || '',
         link: idea.link || '',
         ready_for_dev: idea.ready_for_dev,
+        done: idea.done,
         make_me_owner: false
       }
       this.editIdeaShow = true
@@ -595,6 +606,7 @@ interface ideaView {
   caption: string
   comment?: string
   ready_for_dev: boolean
+  done: boolean,
   link?: string
   reach?: number
   reach_comment?: string

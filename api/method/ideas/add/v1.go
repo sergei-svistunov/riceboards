@@ -65,8 +65,9 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*ideaV1, error) {
 		Caption     string
 		Comment     *string
 		ReadyForDev bool
+		Done        bool
 	}{
-		{curUserId, projects[0].Id, r.Caption, r.Comment, false},
+		{curUserId, projects[0].Id, r.Caption, r.Comment, false, false},
 	}, model.AddOptions{})
 	if err != nil {
 		if db.IsDuplicateEntryErr(err) {

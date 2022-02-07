@@ -27,6 +27,7 @@ type reqV1 struct {
 	GoalsComments    *map[uint32]string  `json:"goals_comments"`
 	Teams            *map[uint32]float64 `json:"teams"`
 	TeamsComments    *map[uint32]string  `json:"teams_comments"`
+	Done             *bool               `json:"done"`
 }
 
 var errorsV1 struct {
@@ -81,6 +82,9 @@ func (m *Method) V1(ctx context.Context, r *reqV1) (*struct{}, error) {
 		}
 		if r.ConfidentComment != nil {
 			ideaFields["confident_comment"] = *r.ConfidentComment
+		}
+		if r.Done != nil {
+			ideaFields["done"] = *r.Done
 		}
 
 		if len(ideaFields) > 0 {

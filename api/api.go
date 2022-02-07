@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-qbit/rbac"
 	"github.com/go-qbit/rpc"
+	"github.com/go-qbit/rpc/client/typescript"
 	"github.com/go-qbit/rpc/openapi"
 	webAuth "github.com/go-qbit/web/auth"
 
@@ -38,8 +39,10 @@ import (
 	"riceboards/db"
 )
 
+const rpcPrefix = "riceboards/api/method"
+
 func New(db *db.Db, auth *webAuth.Auth) http.Handler {
-	gamesRpc := rpc.New("riceboards/api/method")
+	gamesRpc := rpc.New(rpcPrefix)
 
 	if err := gamesRpc.RegisterMethods(
 		mAuthGoogle.New(db, auth),
@@ -106,7 +109,7 @@ func New(db *db.Db, auth *webAuth.Auth) http.Handler {
 			}
 		})
 
-		mux.HandleFunc("/index.ts", typeScriptLibHandler(gamesRpc))
+		mux.HandleFunc("/index.ts", typescript.New(gamesRpc, rpcPrefix))
 	}
 
 	return mux
