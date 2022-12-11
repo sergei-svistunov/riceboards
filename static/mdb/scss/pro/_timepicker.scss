@@ -1,0 +1,25 @@
+.form-outline.timepicker {
+  .is-invalid.form-control,
+  .is-valid.form-control {
+    margin-bottom: 0;
+  }
+
+  .is-invalid ~ .invalid-feedback,
+  .is-valid ~ .valid-feedback {
+    bottom: -23px;
+  }
+}
+
+.timepicker-fade-enter-active,
+.timepicker-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.timepicker-fade-enter-from,
+.timepicker-fade-leave-to {
+  opacity: 0;
+}
+
+.timepicker-open {
+  overflow-y: hidden;
+}

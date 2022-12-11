@@ -1,0 +1,87 @@
+.multi-range-slider input[type="range"] {
+    -webkit-appearance: none;
+}
+
+.multi-range-slider {
+    cursor: unset;
+}
+
+.multi-range-slider input[type="range"] {
+    pointer-events: none;
+    cursor: pointer;
+}
+
+/* thumb */
+.multi-range-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    pointer-events: auto !important;
+}
+
+.multi-range-slider input[type="range"]:focus::-webkit-slider-runnable-track {
+    background: #ccc;
+}
+
+.multi-range-slider input[type="range"]::-moz-range-track {
+    height: 4px;
+    border: none;
+}
+
+.multi-range-slider input[type="range"]::-moz-range-thumb {
+    border: none;
+    pointer-events: auto !important;
+}
+
+.multi-range-slider input[type="range"]:-moz-focusring {
+    outline: 1px solid #ffffff;
+    outline-offset: -1px;
+}
+
+.multi-range-slider input[type="range"]:focus::-moz-range-track {
+    background: #c2c0c2;
+}
+
+.multi-range-slider input[type="range"]::-ms-track {
+    height: 4px;
+    background: transparent;
+    border-color: transparent;
+    border-width: 6px 0;
+    color: transparent;
+}
+
+.multi-range-slider input[type="range"]::-ms-fill-lower {
+    background: #c2c0c2;
+}
+
+.multi-range-slider input[type="range"]::-ms-fill-upper {
+    background: #c2c0c2;
+}
+
+.multi-range-slider input[type="range"]::-ms-thumb {
+    border: none;
+    pointer-events: auto !important;
+    cursor: pointer;
+}
+
+.multi-range-slider input[type="range"]:focus::-ms-fill-lower {
+    background: #c2c0c2;
+}
+
+.multi-range-slider input[type="range"]:focus::-ms-fill-upper {
+    background: #c2c0c2;
+}
+
+.multi-range-slider input[type="range"].multi-range-input::-webkit-slider-runnable-track {
+    background: transparent;
+}
+
+.multi-range-slider input[type="range"].multi-range-input:focus::-webkit-slider-runnable-track {
+    background: transparent;
+}
+
+.multi-range-slider input[type="range"].multi-range-input::-moz-range-track {
+    background: transparent;
+}
+
+.multi-range-slider input[type="range"].multi-range-input:focus::-moz-range-track {
+    background: transparent;
+}

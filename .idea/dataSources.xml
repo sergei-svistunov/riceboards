@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="riceboards@localhost" uuid="1bd33fa2-74a9-47fa-90e5-ccd467ecbedc">
+    <data-source source="LOCAL" name="riceboards@localhost" uuid="a7ea8ce1-64f3-4c27-8477-5b372f22f3d0">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3306/riceboards</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-    <data-source source="LOCAL" name="riceboards@qsoa.cloud" uuid="c903037b-ab5f-4b99-8d9a-6eedf17964c1">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/slFacwSKZHqW4KABaiMohKOq7cpdA8Mj</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

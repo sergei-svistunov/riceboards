@@ -8,31 +8,31 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "core-js": "^3.20.2",
-    "mdb-vue-ui-kit": "^1.8.0",
-    "vue": "^3.2.26",
-    "vue-router": "^4.0.12",
-    "vuex": "^4.0.2"
+    "core-js": "^3.26.1",
+    "mdb-vue-ui-kit": "./mdb/mdb-vue-ui-kit-3.0.0.tgz",
+    "vue": "^3.2.45",
+    "vue-router": "^4.1.6",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
-    "@types/luxon": "^2.0.9",
-    "@types/google-one-tap": "^1.1.0",
-    "@typescript-eslint/eslint-plugin": "^4.33.0",
-    "@typescript-eslint/parser": "^4.33.0",
-    "@vue/cli-plugin-babel": "~4.5.15",
-    "@vue/cli-plugin-eslint": "~4.5.15",
-    "@vue/cli-plugin-router": "~4.5.15",
-    "@vue/cli-plugin-typescript": "~4.5.15",
-    "@vue/cli-plugin-vuex": "~4.5.15",
-    "@vue/cli-service": "~4.5.15",
-    "@vue/compiler-sfc": "^3.2.26",
-    "@vue/eslint-config-typescript": "^7.0.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0",
-    "luxon": "^2.3.0",
+    "@types/luxon": "^3.1.0",
+    "@types/google-one-tap": "^1.2.2",
+    "@typescript-eslint/eslint-plugin": "^5.45.1",
+    "@typescript-eslint/parser": "^5.45.1",
+    "@vue/cli-plugin-babel": "~5.0.8",
+    "@vue/cli-plugin-eslint": "~5.0.8",
+    "@vue/cli-plugin-router": "~5.0.8",
+    "@vue/cli-plugin-typescript": "~5.0.8",
+    "@vue/cli-plugin-vuex": "~5.0.8",
+    "@vue/cli-service": "~5.0.8",
+    "@vue/compiler-sfc": "^3.2.45",
+    "@vue/eslint-config-typescript": "^11.0.2",
+    "eslint": "^8.29.0",
+    "eslint-plugin-vue": "^9.8.0",
+    "luxon": "^3.1.1",
     "sass": "^1.48.0",
     "sass-loader": "^8.0.2",
     "typescript": "~4.4.4",
-    "vue-cli-plugin-mdb5": "~1.2.0"
+    "vue-cli-plugin-mdb5": "~2.1.0"
   }
 }

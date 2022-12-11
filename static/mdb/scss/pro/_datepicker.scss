@@ -1,0 +1,13 @@
+.datepicker-fade-enter-active,
+.datepicker-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.datepicker-fade-enter-from,
+.datepicker-fade-leave-to {
+  opacity: 0;
+}
+
+.datepicker-open {
+  overflow-y: hidden;
+}

@@ -26,3 +26,11 @@
   position: fixed;
   z-index: $zindex-toast;
 }
+
+@each $color, $value in $toasts {
+  .toast-#{$color} {
+    background-color: map-get($value, background-color);
+    color: map-get($value, text-color);
+    border-color: map-get($value, border-color);
+  }
+}

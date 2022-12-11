@@ -1,0 +1,207 @@
+.sidenav {
+  top: 0;
+  left: 0;
+  transform: $sidenav-transform;
+  position: fixed;
+  z-index: $zindex-sidenav;
+  background-color: $sidenav-background-color;
+  overflow: hidden;
+  width: $sidenav-width;
+  height: $sidenav-height;
+  box-shadow: $sidenav-box-shadow;
+  transform: translateX(0%);
+  transition: all 0.3s linear 0s;
+
+  &.sidenav-theme-light {
+    color: $sidenav-data-color-light-color;
+  }
+
+  &.sidenav-right {
+    right: 0;
+    left: unset;
+  }
+
+  &.sidenav-absolute {
+    position: absolute;
+    height: 100%;
+  }
+
+  &.sidenav-relative {
+    position: relative;
+    height: 100%;
+  }
+
+  .sidenav-slim {
+    display: none;
+  }
+
+  &.sidenav-slim-collapsed {
+    width: $sidenav-data-slim-collapsed-true-width;
+
+    .sidenav-non-slim {
+      transition: all 0.3s linear 0s;
+    }
+
+    .sidenav-slim {
+      display: unset;
+    }
+  }
+}
+
+.sidenav-menu,
+.sidenav-collapse {
+  list-style: none;
+  position: relative;
+  padding: 0 $sidenav-menu-padding;
+  margin: 0;
+}
+
+.sidenav-collapse {
+  display: none;
+  padding: 0;
+
+  &.show,
+  &.collapsing {
+    display: block;
+  }
+
+  .sidenav-link {
+    font-size: $sidenav-collapse-sidenav-link-font-size;
+    height: $sidenav-collapse-sidenav-link-height;
+    padding-left: 3.4rem;
+  }
+}
+
+.sidenav-item {
+  position: relative;
+}
+
+.sidenav-link {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: $sidenav-link-font-size;
+  padding: $sidenav-link-padding-y $sidenav-link-padding-x;
+  height: $sidenav-link-height;
+  color: unset;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: $sidenav-link-border-radius;
+  transition: $sidenav-link-transition;
+
+  &:hover {
+    color: $sidenav-link-hover-color;
+    background-color: $sidenav-link-hover-background-color;
+    outline: none;
+  }
+
+  &:active,
+  &:focus {
+    color: $sidenav-link-active-focus-color;
+    background-color: $sidenav-link-active-focus-background-color;
+    outline: none;
+  }
+
+  &.active {
+    color: $sidenav-link-active-color;
+  }
+}
+
+.sidenav-subheading {
+  color: unset;
+  text-transform: uppercase;
+  font-size: $sidenav-subheading-font-size;
+  padding: $sidenav-subheading-padding-y $sidenav-subheading-padding-x;
+  font-weight: $sidenav-subheading-fw;
+}
+
+.sidenav-sm {
+  .sidenav-link {
+    padding-top: $sidenav-sm-link-pt;
+    padding-bottom: $sidenav-sm-link-pb;
+    height: initial;
+  }
+}
+
+.rotate-icon {
+  position: absolute;
+  right: 0;
+  margin-left: auto;
+  margin-right: $sidenav-rotate-icon-margin-right;
+  transition: $sidenav-rotate-icon-transition;
+}
+
+.sidenav-backdrop {
+  z-index: $zindex-sidenav-backdrop;
+  top: 0;
+  left: 0;
+  background-color: $sidenav-backdrop-background-color;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.sidenav-light {
+  color: $sidenav-light-color;
+}
+
+// Color options
+
+@each $color, $value in $theme-colors {
+  $red: red($value);
+  $green: green($value);
+  $blue: blue($value);
+
+  .sidenav-#{$color} {
+    .sidenav-item {
+      .sidenav-link {
+        &:hover {
+          color: $value;
+          background-color: rgba($red, $green, $blue, 0.05);
+        }
+      }
+    }
+
+    .sidenav-link {
+      &:active,
+      &:focus {
+        color: $value;
+        background-color: rgba($red, $green, $blue, 0.05);
+      }
+
+      &.active {
+        color: $value;
+      }
+    }
+  }
+}
+
+.backdrop-enter-active,
+.backdrop-leave-active {
+  transition: opacity 0.3s ease-out 0s;
+}
+
+.backdrop-enter-from,
+.backdrop-leave-to {
+  opacity: 0;
+}
+
+.sidenav-enter-active,
+.sidenav-leave-active,
+.right-sidenav-enter-active,
+.right-sidenav-leave-active {
+  transition: transform 0.3s linear 0s;
+}
+
+.sidenav-enter-from,
+.sidenav-leave-to {
+  transform: translateX(-100%);
+}
+
+.right-sidenav-enter-from,
+.right-sidenav-leave-to {
+  transform: translateX(100%);
+}

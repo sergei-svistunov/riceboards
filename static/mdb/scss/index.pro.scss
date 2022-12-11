@@ -1,0 +1,27 @@
+// MDB Standard Pro
+@import "./standard/mdb.pro";
+
+// MDB Vue core utils
+@import "./free/variables";
+
+// MDB Vue Free
+@import "./free/checkboxes";
+@import "./free/badges";
+@import "./free/buttons";
+@import "./free/button-group";
+@import "./free/carousel";
+@import "./free/navbar";
+@import "./free/tooltips";
+@import "./free/popovers";
+@import "./free/validation";
+@import "./free/tabs";
+@import "./free/input-group";
+@import "./free/modal";
+
+// MDB Vue Pro
+@import "./pro/datepicker";
+@import "./pro/scrollbar";
+@import "./pro/sidenav";
+@import "./pro/select";
+@import "./pro/timepicker";
+@import "./pro/multi-range";

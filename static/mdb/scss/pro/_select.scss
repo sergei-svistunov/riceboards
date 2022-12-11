@@ -1,0 +1,47 @@
+.select-wrapper {
+  .select-arrow {
+    pointer-events: none;
+  }
+
+  &.is-valid .form-outline .form-control {
+    margin-bottom: 1rem;
+    ~ .form-notch > * {
+      border-color: #00b74a;
+    }
+    ~ .select-arrow {
+      color: #00b74a;
+    }
+    ~ .valid-feedback {
+      position: absolute;
+      display: block;
+    }
+  }
+  &.is-invalid .form-outline .form-control {
+    margin-bottom: 1rem;
+    ~ .form-notch > * {
+      border-color: #f93154;
+    }
+    ~ .select-arrow {
+      color: #f93154;
+    }
+    ~ .invalid-feedback {
+      position: absolute;
+      display: block;
+    }
+  }
+}
+
+.select-option-group {
+  padding-left: 26px;
+}
+
+.input-group {
+  .select-wrapper:not(:first-child) .form-notch-leading {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+  }
+  .select-wrapper:not(:last-child) .form-notch-trailing {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+}

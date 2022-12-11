@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/riceboard.online.iml" filepath="$PROJECT_DIR$/riceboard.online.iml" />
+      <module fileurl="file://$PROJECT_DIR$/riceboards.iml" filepath="$PROJECT_DIR$/riceboards.iml" />
     </modules>
   </component>
 </project>

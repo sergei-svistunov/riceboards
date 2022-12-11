@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+/* eslint-disable camelcase, @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
 
 export type AuthGoogleReqV1 = {
     credential: string
@@ -13,8 +13,7 @@ export type AuthGoogleUserV1 = {
     permissions: string[]
 }
 
-export type AuthMeReqV1 = {
-}
+export type AuthMeReqV1 = Record<string, never>
 
 export type AuthMeUserV1 = {
     id: number
@@ -166,8 +165,7 @@ export type ProjectsListProjectV1 = {
     caption: string
 }
 
-export type ProjectsListReqV1 = {
-}
+export type ProjectsListReqV1 = Record<string, never>
 
 export type ProjectsOptionsConfidentV1 = {
     id: number
@@ -236,8 +234,7 @@ export type ProjectsUsersDeleteReqV1 = {
     e_mail: string
 }
 
-export type Struct_c7d8f8ae = {
-}
+export type Struct_c7d8f8ae = Record<string, never>
 
 export class ApiError extends Error {
     private readonly _code: string
@@ -266,17 +263,31 @@ export class ApiError extends Error {
 
 export default class API {
     static url = '/api'
+    static customHeaders: () => Promise<Record<string, string>> | undefined
 
-    private static post(method: string, request: unknown): unknown {
+    private static requestToFormData(request: any): FormData {
+        const form = new FormData()
+        const json_data: any = {}
+        for (const name in request) {
+            if (request[name] instanceof Blob) {
+                form.append(name, request[name])
+                continue
+            }
+            json_data[name] = request[name]
+        }
+        if (Object.keys(json_data).length !== 0) form.append('json_data', JSON.stringify(json_data))
+        return form
+    }
+
+    private static async post(method: string, request: unknown, contentType: string): Promise<unknown> {
         return fetch(
             this.url + method,
             {
                 method: 'post',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-API-Key': localStorage.getItem('token') || ''
-                },
-                body: JSON.stringify(request)
+                headers: Object.assign(this.customHeaders ? await this.customHeaders()! : {},
+                    contentType === 'application/json' ? {'Content-Type': contentType} : {}
+                ),
+                body: contentType === 'application/json' ? JSON.stringify(request) : this.requestToFormData(request)
             }
         )
             .then(response => {
@@ -302,111 +313,111 @@ export default class API {
 
     // Sign in through Google
     public static AuthGoogleV1(request: AuthGoogleReqV1): Promise<AuthGoogleUserV1> {
-        return this.post('/auth/google/v1', request) as Promise<AuthGoogleUserV1>
+        return this.post('/auth/google/v1', request, 'application/json') as Promise<AuthGoogleUserV1>
     }
 
     // Returns current user
     public static AuthMeV1(request: AuthMeReqV1): Promise<AuthMeUserV1> {
-        return this.post('/auth/me/v1', request) as Promise<AuthMeUserV1>
+        return this.post('/auth/me/v1', request, 'application/json') as Promise<AuthMeUserV1>
     }
 
     // Add a new idea
     public static IdeasAddV1(request: IdeasAddReqV1): Promise<IdeasAddIdeaV1> {
-        return this.post('/ideas/add/v1', request) as Promise<IdeasAddIdeaV1>
+        return this.post('/ideas/add/v1', request, 'application/json') as Promise<IdeasAddIdeaV1>
     }
 
     // Delete the idea
     public static IdeasDeleteV1(request: IdeasDeleteReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/ideas/delete/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/ideas/delete/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 
     // Add a new idea
     public static IdeasEditV1(request: IdeasEditReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/ideas/edit/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/ideas/edit/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 
     // Returns projects list
     public static IdeasListV1(request: IdeasListReqV1): Promise<IdeasListIdeaV1[]> {
-        return this.post('/ideas/list/v1', request) as Promise<IdeasListIdeaV1[]>
+        return this.post('/ideas/list/v1', request, 'application/json') as Promise<IdeasListIdeaV1[]>
     }
 
     // Add a new project
     public static ProjectsAddV1(request: ProjectsAddReqV1): Promise<ProjectsAddProjectV1> {
-        return this.post('/projects/add/v1', request) as Promise<ProjectsAddProjectV1>
+        return this.post('/projects/add/v1', request, 'application/json') as Promise<ProjectsAddProjectV1>
     }
 
     // Add a new project confidence level
     public static ProjectsConfidenceAddV1(request: ProjectsConfidenceAddReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/projects/confidence/add/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/projects/confidence/add/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 
     // Delete the project confidence level
     public static ProjectsConfidenceDeleteV1(request: ProjectsConfidenceDeleteReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/projects/confidence/delete/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/projects/confidence/delete/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 
     // Edit the project confidence level
     public static ProjectsConfidenceEditV1(request: ProjectsConfidenceEditReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/projects/confidence/edit/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/projects/confidence/edit/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 
     // Edit the project
     public static ProjectsEditV1(request: ProjectsEditReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/projects/edit/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/projects/edit/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 
     // Returns the project
     public static ProjectsGetV1(request: ProjectsGetReqV1): Promise<ProjectsGetProjectV1> {
-        return this.post('/projects/get/v1', request) as Promise<ProjectsGetProjectV1>
+        return this.post('/projects/get/v1', request, 'application/json') as Promise<ProjectsGetProjectV1>
     }
 
     // Add a new project goal
     public static ProjectsGoalsAddV1(request: ProjectsGoalsAddReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/projects/goals/add/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/projects/goals/add/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 
     // Delete the project goal
     public static ProjectsGoalsDeleteV1(request: ProjectsGoalsDeleteReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/projects/goals/delete/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/projects/goals/delete/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 
     // Edit the project goal
     public static ProjectsGoalsEditV1(request: ProjectsGoalsEditReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/projects/goals/edit/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/projects/goals/edit/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 
     // Returns projects list
     public static ProjectsListV1(request: ProjectsListReqV1): Promise<ProjectsListProjectV1[]> {
-        return this.post('/projects/list/v1', request) as Promise<ProjectsListProjectV1[]>
+        return this.post('/projects/list/v1', request, 'application/json') as Promise<ProjectsListProjectV1[]>
     }
 
     // Returns the ideas options
     public static ProjectsOptionsV1(request: ProjectsOptionsReqV1): Promise<ProjectsOptionsOptionsV1> {
-        return this.post('/projects/options/v1', request) as Promise<ProjectsOptionsOptionsV1>
+        return this.post('/projects/options/v1', request, 'application/json') as Promise<ProjectsOptionsOptionsV1>
     }
 
     // Add a new project team
     public static ProjectsTeamsAddV1(request: ProjectsTeamsAddReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/projects/teams/add/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/projects/teams/add/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 
     // Delete the project team
     public static ProjectsTeamsDeleteV1(request: ProjectsTeamsDeleteReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/projects/teams/delete/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/projects/teams/delete/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 
     // Edit the project team
     public static ProjectsTeamsEditV1(request: ProjectsTeamsEditReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/projects/teams/edit/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/projects/teams/edit/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 
     // Add a new project user
     public static ProjectsUsersAddV1(request: ProjectsUsersAddReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/projects/users/add/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/projects/users/add/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 
     // Delete the project user
     public static ProjectsUsersDeleteV1(request: ProjectsUsersDeleteReqV1): Promise<Struct_c7d8f8ae> {
-        return this.post('/projects/users/delete/v1', request) as Promise<Struct_c7d8f8ae>
+        return this.post('/projects/users/delete/v1', request, 'application/json') as Promise<Struct_c7d8f8ae>
     }
 }
